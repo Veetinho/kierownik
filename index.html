@@ -4,10 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <title>Kierownik</title>
   </head>
   <body>
-    <div class="container h-screen mx-auto bg-slate-500">
+    <div class="container h-screen mx-auto bg-slate-100">
       <div class="grid grid-rows-3 grid-flow-col gap-4 p-2">
         <div class="bg-amber-500 rounded-lg p-2">1</div>
         <div class="bg-amber-500 rounded-lg p-2">2</div>
@@ -15,6 +17,16 @@
         <div class="bg-amber-500 rounded-lg p-2">4</div>
         <div class="bg-amber-500 rounded-lg p-2">5</div>
       </div>
+      <div>
+        <canvas id="myChart"></canvas>
+      </div>
     </div>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js"
+      integrity="sha512-L0Shl7nXXzIlBSUUPpxrokqq4ojqgZFQczTYlGjzONGTDAcLremjwaWv5A+EDLnxhQzY5xUZPWLOLqYRkY0Cbw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script src="main.js"></script>
   </body>
 </html>
