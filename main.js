@@ -1,19 +1,22 @@
+
+
+
 const ctx = document.getElementById('myChart')
 
 new Chart(ctx, {
   type: 'line',
   data: {
-    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange', 'Another'],
+    labels: ['5 wrz', '6 wrz', '7 wrz', '8 wrz', '9 wrz', '10 wrz', '11 wrz'],
     datasets: [
       {
-        label: 'My First Dataset',
+        label: 'Plan',
         data: [65, 59, 80, 81, 56, 55, 40],
         fill: false,
         borderColor: 'rgb(75, 192, 192)',
         tension: 0.1,
       },
       {
-        label: 'My First Dataset',
+        label: 'Fakt',
         data: [55, 45, 77, 88, 60, 56, 42],
         fill: false,
         borderColor: 'green',
@@ -21,8 +24,13 @@ new Chart(ctx, {
       },
       {
         type: 'bar',
-        label: 'Bar Dataset',
-        data: [5, 7, 7, 6, 4, 4],
+        label: 'Zasoby plan',
+        data: [5, 7, 7, 6, 4, 4, 5],
+      },
+      {
+        type: 'bar',
+        label: 'Zasoby fakt',
+        data: [6, 6, 6, 6, 5, 4, 6],
       },
     ],
   },
