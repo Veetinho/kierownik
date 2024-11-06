@@ -9,13 +9,37 @@
     <title>Kierownik</title>
   </head>
   <body>
-    <div class="container h-screen mx-auto bg-slate-50 m-3">
+    <div class="container h-screen mx-auto bg-slate-50 px-2">
       <div class="flex flex-row gap-3 py-3">
-        <div class="basis-2/3 border-2 border-blue-400 rounded-2xl">
-          <div class="grid grid-col-2 grid-flow-row gap-2 p-2">
-            <div class="bg-amber-500 rounded-lg p-2 col-span-2">0</div>
-            <div class="bg-amber-500 rounded-lg p-2">1</div>
-            <div class="bg-amber-500 rounded-lg p-2">2</div>
+        <div class="basis-2/3 border-2 border-blue-400 rounded-2xl px-2">
+          <div class="grid grid-col-2 grid-flow-row gap-2">
+            <div class="p-2 col-span-2 flex justify-center">
+              Informacje ogólne
+            </div>
+            <div class="rounded-lg">
+              <select
+                class="w-full p-2 rounded-lg"
+                name="planObject"
+                id="planObject"
+              >
+                <option selected disabled value="">Wybierz z obiekt...</option>
+                <option value="Stelpe">Stelpe</option>
+                <option value="Batkowo">Batkowo</option>
+                <option value="Osów 2">Osów 2</option>
+              </select>
+            </div>
+            <div class="rounded-lg">
+              <select
+                class="w-full p-2 rounded-lg"
+                name="planObject"
+                id="planObject"
+              >
+                <option selected disabled value="">Wybierz z obiekt...</option>
+                <option value="Stelpe">Stelpe</option>
+                <option value="Batkowo">Batkowo</option>
+                <option value="Osów 2">Osów 2</option>
+              </select>
+            </div>
             <div class="bg-amber-500 rounded-lg p-2">3</div>
             <div class="bg-amber-500 rounded-lg p-2">4</div>
             <div class="bg-amber-500 rounded-lg p-2 col-span-2">5</div>
@@ -49,9 +73,10 @@
           <div class="flex flex-row gap-2 items-center">
             <div class="basis-3/4">
               <select
+                disabled
                 class="w-full p-2 rounded-lg"
-                name="calcDrop1"
-                id="calcDrop1"
+                name="calcDrop2"
+                id="calcDrop2"
               >
                 <option selected disabled value="">Wybierz z listy...</option>
                 <option value="Ilość dni">Ilość dni</option>
@@ -64,7 +89,7 @@
               </select>
             </div>
             <div class="basis-1/4">
-              <input id="calcInput2" class="p-2 rounded-lg" />
+              <input id="calcInput2" class="p-2 rounded-lg" disabled />
             </div>
           </div>
           <div class="flex flex-row gap-2 items-center">
