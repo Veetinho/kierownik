@@ -26,4 +26,14 @@ new Chart(ctx, {
       },
     ],
   },
+  options: {
+    animations: {
+      tension: {
+        duration: 500,
+        easing: 'easeOutBounce',
+        from: 1,
+        to: 0,
+      },
+    },
+  },
 })
