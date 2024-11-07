@@ -1,7 +1,71 @@
+const _ = (id) => document.getElementById(id)
 
+document.addEventListener('DOMContentLoaded', {})
 
+const ctx = _('myChart')
+const dataFakt = {
+  employees: [6, 7, 6, 5, 7, 7, 7],
+}
 
-const ctx = document.getElementById('myChart')
+const dataPlan = {
+  employees: [6, 6, 6, 7, 7, 7, 7],
+}
+
+function resetHelpingCalcForm() {
+  _('helpingCalcForm').reset()
+  calcDrop2.setAttribute('disabled', true)
+  _('calcInput2').setAttribute('disabled', true)
+  _('calcResultValue').textContent = ''
+  _('calcResultCategory').textContent = ''
+}
+
+function onChangeCalcDrop1(e) {
+  if (e.value === '') return
+  const calcDrop2 = _('calcDrop2')
+  const arr = [
+    'Wybierz z listy...',
+    'Ilość dni',
+    'Ilość pracowników (dziennie)',
+    'Ilość płanowana (1pr/1dź)',
+  ]
+  calcDrop2.innerHTML = arr
+    .filter((v) => v !== e.value)
+    .map((v, i) => {
+      return i === 0
+        ? `<option selected disabled value="">${v}</option>`
+        : `<option value="${v}">${v}</option>`
+    })
+    .join('')
+  calcDrop2.removeAttribute('disabled')
+  _('calcInput2').removeAttribute('disabled')
+  _('calcInput1').value = ''
+  _('calcInput2').value = ''
+  _('calcResultValue').textContent = ''
+  _('calcResultCategory').textContent = ''
+}
+
+function calculateHelpingResult(e) {
+  e.value = e.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')
+  const calcInput1 = _('calcInput1').value
+  const calcInput2 = _('calcInput2').value
+  if (calcInput1 && calcInput2) {
+    _('calcResultValue').textContent = (
+      15000 /
+      calcInput1 /
+      calcInput2
+    ).toFixed(2)
+  }
+}
+
+function setHelpingCategory() {
+  _('calcResultCategory').textContent = [
+    'Ilość dni',
+    'Ilość pracowników (dziennie)',
+    'Ilość płanowana (1pr/1dź)',
+  ].filter((v) => v !== _('calcDrop1').value && v !== _('calcDrop2').value)[0]
+  _('calcInput2').value = ''
+  _('calcResultValue').textContent = ''
+}
 
 new Chart(ctx, {
   type: 'line',
@@ -10,27 +74,16 @@ new Chart(ctx, {
     datasets: [
       {
         label: 'Plan',
-        data: [65, 59, 80, 81, 56, 55, 40],
+        data: [65, 120, 155, 186, 220, 268, 300],
         fill: false,
         borderColor: 'rgb(75, 192, 192)',
         tension: 0.1,
       },
       {
-        label: 'Fakt',
-        data: [55, 45, 77, 88, 60, 56, 42],
-        fill: false,
-        borderColor: 'green',
-        tension: 0.1,
-      },
-      {
         type: 'bar',
         label: 'Zasoby plan',
-        data: [5, 7, 7, 6, 4, 4, 5],
-      },
-      {
-        type: 'bar',
-        label: 'Zasoby fakt',
-        data: [6, 6, 6, 6, 5, 4, 6],
+        data: dataFakt.employees.map((v, i) => v - dataPlan.employees[i]),
+        backgroundColor: 'rgb(75, 192, 192)',
       },
     ],
   },
