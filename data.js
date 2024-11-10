@@ -145,3 +145,26 @@ const planJobsDetail = [
     quantity: '20',
   },
 ]
+
+const jobTypes = [
+  'Kafarowanie słupów konstrukcji',
+  'Kafarowanie słupów ogrodzenia',
+  'Montaż ogrodzenia',
+  'Montaż stołów',
+  'Montaż PV modułów',
+  'Ułożenia kabli AC',
+  'Ułożenia kabli DC',
+  'Podłączenia inwerterów AC',
+  'Podłączenia inwerterów DC',
+  'Trafostacja posadowienie',
+  'Trafostacja podłączenie',
+  'Montaż & podłączenia CCTV',
+  'Estetyka etc.',
+]
+
+export default data = {
+  jobTypes,
+  planJobsDetail,
+  planJobsGeneral,
+  projects,
+}

@@ -3,13 +3,6 @@ const _ = (id) => document.getElementById(id)
 document.addEventListener('DOMContentLoaded', {})
 
 const ctx = _('myChart')
-const dataFakt = {
-  employees: [6, 7, 6, 5, 7, 7, 7],
-}
-
-const dataPlan = {
-  employees: [6, 6, 6, 7, 7, 7, 7],
-}
 
 function resetHelpingCalcForm() {
   _('helpingCalcForm').reset()
@@ -17,6 +10,10 @@ function resetHelpingCalcForm() {
   _('calcInput2').setAttribute('disabled', true)
   _('calcResultValue').textContent = ''
   _('calcResultCategory').textContent = ''
+}
+
+function resetGeneralPlanInfoForm() {
+  _('generalPlanInfoForm').reset()
 }
 
 function onChangeCalcDrop1(e) {
@@ -45,7 +42,7 @@ function onChangeCalcDrop1(e) {
 }
 
 function calculateHelpingResult(e) {
-  e.value = e.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')
+  numberInputPattern(e)
   const calcInput1 = _('calcInput1').value
   const calcInput2 = _('calcInput2').value
   if (calcInput1 && calcInput2) {
@@ -55,6 +52,10 @@ function calculateHelpingResult(e) {
       calcInput2
     ).toFixed(2)
   }
+}
+
+function numberInputPattern(e) {
+  e.value = e.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')
 }
 
 function setHelpingCategory() {
@@ -82,7 +83,7 @@ new Chart(ctx, {
       {
         type: 'bar',
         label: 'Zasoby plan',
-        data: dataFakt.employees.map((v, i) => v - dataPlan.employees[i]),
+        data: [6, 7, 6, 5, 7, 7, 7],
         backgroundColor: 'rgb(75, 192, 192)',
       },
     ],
