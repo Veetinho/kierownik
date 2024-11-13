@@ -1,13 +1,12 @@
 const _ = (id) => document.getElementById(id)
-const chartJobPlan = _('chartJobPlan')
-const chartEmployeesPlan = _('chartEmployeesPlan')
+const detailPlanListForm = _('detailPlanListForm')
+const chartJobPlan = createJobPlanChart(_('chartJobPlan'))
+const chartEmployeesPlan = createEmployeesQuantityChart(_('chartEmployeesPlan'))
 const planDateStart = _('planDateStart')
 const planDateEnd = _('planDateEnd')
 
 document.addEventListener('DOMContentLoaded', () => {
   setPlanDatesRange()
-  createJobPlanChart()
-  createEmployeesQuantityChart()
 })
 
 planDateStart.addEventListener('change', (e) => {
@@ -17,8 +16,7 @@ planDateStart.addEventListener('change', (e) => {
   const datesDifference = getDaysDifference(value)
   setPlanEndDatesRange(datesDifference, datesDifference + 366)
   const daysBetween = getDatesRange()
-  setDaysQuantity(daysBetween)
-  refreshDatesRangeFormInnerHtml(daysBetween.dates)
+  updatePlanDataAndCharts(daysBetween)
 })
 
 planDateEnd.addEventListener('change', (e) => {
@@ -27,8 +25,45 @@ planDateEnd.addEventListener('change', (e) => {
     planDateEnd.value = planDateStart.value
   if (value === '' || value.startsWith(0)) return
   const daysBetween = getDatesRange()
-  setDaysQuantity(daysBetween)
-  refreshDatesRangeFormInnerHtml(daysBetween.dates)
+  updatePlanDataAndCharts(daysBetween)
+})
+
+detailPlanListForm.addEventListener('change', (e) => {
+  e.preventDefault()
+  const rows = detailPlanListForm.getElementsByClassName('w-full')
+  const data = []
+  let rowIndx = 0
+  while (rowIndx < rows.length) {
+    const dayData = {
+      date: null,
+      foremen: [],
+      employees: [],
+    }
+    const row = rows[rowIndx]
+    dayData.date = row.getElementsByTagName('p')[0].textContent
+    const foremen = row.getElementsByTagName('select')
+    let foremenIndx = 0
+    while (foremenIndx < foremen.length) {
+      dayData.foremen.push(foremen[foremenIndx].value)
+      foremenIndx++
+    }
+    const employees = row.getElementsByTagName('input')
+    let employeeIndx = 0
+    while (employeeIndx < employees.length) {
+      dayData.employees.push(employees[employeeIndx].value)
+      employeeIndx++
+    }
+    data.push(dayData)
+    rowIndx++
+  }
+  updateEmployeesQuantityChart(
+    data,
+    data.map((v) => v.employees.reduce((a, b) => Number(a) + Number(b), 0))
+  )
+  updateJobPlanChart(
+    data,
+    data.map((v) => v.employees.reduce((a, b) => Number(a) + Number(b), 0))
+  )
 })
 
 function setDaysQuantity(daysBetween) {
@@ -192,8 +227,108 @@ function addOneMoreForemanBlock(e) {
   inputsBlock.insertBefore(newDiv, firstDiv)
 }
 
-function refreshDatesRangeFormInnerHtml(dates) {
-  _('detailPlanListForm').innerHTML = createDatesRangeFormInnerHtml(dates)
+function updateDatesRangeFormInnerHtml(dates) {
+  detailPlanListForm.innerHTML = createDatesRangeFormInnerHtml(dates)
+}
+
+function updatePlanDataAndCharts(
+  daysBetween,
+  dataJob = null,
+  dataEmployees = null
+) {
+  setDaysQuantity(daysBetween)
+  updateDatesRangeFormInnerHtml(daysBetween.dates)
+  updateJobPlanChart(
+    daysBetween.dates,
+    dataJob || new Array(daysBetween.dates.length).fill(0)
+  )
+  updateEmployeesQuantityChart(
+    daysBetween.dates,
+    dataEmployees || new Array(daysBetween.dates.length).fill(0)
+  )
+}
+
+function createJobPlanChart(ctx) {
+  return new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Plan'],
+      datasets: [
+        {
+          label: 'Plan wykonywania',
+          data: [1],
+          fill: false,
+          borderColor: 'rgb(75, 192, 192)',
+          tension: 0.1,
+        },
+      ],
+    },
+    options: {
+      spanGaps: true,
+      animations: {
+        tension: {
+          duration: 500,
+          easing: 'easeOutBounce',
+          from: 1,
+          to: 0,
+        },
+      },
+    },
+  })
+}
+
+function updateJobPlanChart(labels, data) {
+  const coeff = parseFloat(_('planJobDayQuantity').value) || 0
+  data.reduce((acc, el, i, arr) => {
+    arr[i] = Number(acc) + Number(el)
+    return arr[i]
+  }, 0)
+  chartJobPlan.data.labels = labels.map((v) => {
+    const regex = new RegExp(/\d{4}-\d{2}-\d{2}/, 'g')
+    if (!regex.test(v.date)) return v.date
+    const date = new Date(v.date)
+    return `${date.getDate()} ${getPolishMonthName(date.getMonth())}`
+  })
+  chartJobPlan.data.datasets[0].data = data.map((v) => v * coeff)
+  chartJobPlan.update()
+}
+
+function createEmployeesQuantityChart(ctx) {
+  return new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Ilość'],
+      datasets: [
+        {
+          type: 'bar',
+          label: 'Pracowniki plan',
+          data: [0],
+          backgroundColor: 'rgb(75, 192, 192)',
+        },
+      ],
+    },
+    options: {
+      animations: {
+        tension: {
+          duration: 500,
+          easing: 'easeOutBounce',
+          from: 1,
+          to: 0,
+        },
+      },
+    },
+  })
+}
+
+function updateEmployeesQuantityChart(labels, data) {
+  chartEmployeesPlan.data.labels = labels.map((v) => {
+    const regex = new RegExp(/\d{4}-\d{2}-\d{2}/, 'g')
+    if (!regex.test(v.date)) return v.date
+    const date = new Date(v.date)
+    return `${date.getDate()} ${getPolishMonthName(date.getMonth())}`
+  })
+  chartEmployeesPlan.data.datasets[0].data = data
+  chartEmployeesPlan.update()
 }
 
 function getPolishMonthName(num) {
@@ -298,59 +433,4 @@ function createNewForemanInputsBlock() {
       />
     </svg>`
   return newDiv
-}
-
-function createJobPlanChart() {
-  new Chart(chartJobPlan, {
-    type: 'line',
-    data: {
-      labels: ['5 wrz', '6 wrz', '7 wrz', '8 wrz', '9 wrz', '10 wrz', '11 wrz'],
-      datasets: [
-        {
-          label: 'Plan wykonywania',
-          data: [65, 120, 155, 186, 220, 268, 300],
-          fill: false,
-          borderColor: 'rgb(75, 192, 192)',
-          tension: 0.1,
-        },
-      ],
-    },
-    options: {
-      animations: {
-        tension: {
-          duration: 500,
-          easing: 'easeOutBounce',
-          from: 1,
-          to: 0,
-        },
-      },
-    },
-  })
-}
-
-function createEmployeesQuantityChart() {
-  new Chart(chartEmployeesPlan, {
-    type: 'line',
-    data: {
-      labels: ['5 wrz', '6 wrz', '7 wrz', '8 wrz', '9 wrz', '10 wrz', '11 wrz'],
-      datasets: [
-        {
-          type: 'bar',
-          label: 'Pracowniki plan',
-          data: [6, 7, 6, 5, 7, 7, 7],
-          backgroundColor: 'rgb(75, 192, 192)',
-        },
-      ],
-    },
-    options: {
-      animations: {
-        tension: {
-          duration: 500,
-          easing: 'easeOutBounce',
-          from: 1,
-          to: 0,
-        },
-      },
-    },
-  })
 }
