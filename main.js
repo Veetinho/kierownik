@@ -2,14 +2,31 @@ const _ = (id) => document.getElementById(id)
 const detailPlanListForm = _('detailPlanListForm')
 const chartJobPlan = createJobPlanChart(_('chartJobPlan'))
 const chartEmployeesPlan = createEmployeesQuantityChart(_('chartEmployeesPlan'))
+const planObject = _('planObject')
+const planJobType = _('planJobType')
+const planQuantityTotal = _('planQuantityTotal')
 const planDateStart = _('planDateStart')
 const planDateEnd = _('planDateEnd')
 
 document.addEventListener('DOMContentLoaded', async () => {
   setPlanDatesRange()
-  const data = await fetchData()
-  console.log(data)
+  setProjectDropdownOptions(JSON.parse(localStorage.getItem('projects')))
+  // const { jobs, projects, factJobsDetail, factJobsGeneral, planJobsGeneral } =
+  //   await fetchData()
+  // setToLocalStorage(
+  //   ['jobs', jobs],
+  //   ['projects', projects],
+  //   ['factJobsDetail', factJobsDetail],
+  //   ['factJobsGeneral', factJobsGeneral],
+  //   ['planJobsGeneral', planJobsGeneral]
+  // )
 })
+
+function setToLocalStorage(...items) {
+  items.forEach((item) => {
+    localStorage.setItem(item[0], JSON.stringify(item[1]))
+  })
+}
 
 async function fetchData() {
   const data = await fetch(
@@ -38,8 +55,31 @@ planDateEnd.addEventListener('change', (e) => {
   updatePlanDataAndCharts(daysBetween)
 })
 
-detailPlanListForm.addEventListener('change', (e) => {
-  e.preventDefault()
+planObject.addEventListener('input', () => {
+  const project = planObject.value
+  const jobs = JSON.parse(localStorage.getItem('planJobsGeneral'))
+  const options = jobs
+    .filter((v) => v.project === project)
+    .map((v) => `<option value="${v.job}">${v.job}</option>`)
+  options.unshift(
+    '<option selected disabled value="">Wybierz rodzaj robót...</option>'
+  )
+  planJobType.innerHTML = options.join('')
+  planJobType.removeAttribute('disabled')
+  planQuantityTotal.textContent = 0
+})
+
+planJobType.addEventListener('input', () => {
+  const project = planObject.value
+  const job = planJobType.value
+  const jobs = JSON.parse(localStorage.getItem('planJobsGeneral'))
+  const projectJob = jobs.filter(
+    (v) => v.job === job && v.project === project
+  )[0]
+  planQuantityTotal.textContent = projectJob?.quantity || 0
+})
+
+function onchangeDetailPlanListForm() {
   const rows = detailPlanListForm.getElementsByClassName('w-full')
   const data = []
   let rowIndx = 0
@@ -66,6 +106,7 @@ detailPlanListForm.addEventListener('change', (e) => {
     data.push(dayData)
     rowIndx++
   }
+  updatePlanQuantitySum(data)
   updateEmployeesQuantityChart(
     data,
     data.map((v) => v.employees.reduce((a, b) => Number(a) + Number(b), 0))
@@ -74,7 +115,29 @@ detailPlanListForm.addEventListener('change', (e) => {
     data,
     data.map((v) => v.employees.reduce((a, b) => Number(a) + Number(b), 0))
   )
-})
+}
+
+function updatePlanQuantitySum(data) {
+  const coeff = parseFloat(_('planJobDayQuantity').value) || 0
+  _('planQuantitySum').textContent =
+    data
+      .map((v) => v.employees.reduce((a, b) => Number(a) + Number(b), 0))
+      .reduce((a, b) => Number(a) + Number(b), 0) * coeff
+}
+
+function setProjectDropdownOptions(projects) {
+  const options = projects
+    .sort((a, b) => {
+      if (a.project < b.project) return -1
+      if (a.project > b.project) return 1
+      return 0
+    })
+    .map((v) => `<option value="${v.project}">${v.project}</option>`)
+  options.unshift(
+    '<option selected disabled value="">Wybierz obiekt...</option>'
+  )
+  planObject.innerHTML = options.join('')
+}
 
 function setDaysQuantity(daysBetween) {
   _('planDaysTotal').textContent = daysBetween.allDays.toString()
@@ -201,7 +264,7 @@ function calculateHelpingResult(e) {
   const calcInput2 = _('calcInput2').value
   if (calcInput1 && calcInput2) {
     _('calcResultValue').textContent = (
-      15000 /
+      planQuantityTotal.textContent /
       calcInput1 /
       calcInput2
     ).toFixed(2)
@@ -228,6 +291,7 @@ function setHelpingCategory() {
 
 function removeForemanInputsBlock(e) {
   e.parentNode.remove()
+  onchangeDetailPlanListForm()
 }
 
 function addOneMoreForemanBlock(e) {

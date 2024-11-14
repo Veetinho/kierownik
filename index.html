@@ -39,9 +39,6 @@
                 id="planObject"
               >
                 <option selected disabled value="">Wybierz obiekt...</option>
-                <option value="Stelpe">Stelpe</option>
-                <option value="Batkowo">Batkowo</option>
-                <option value="Osów 2">Osów 2</option>
               </select>
             </div>
             <div
@@ -66,6 +63,7 @@
             </div>
             <div class="bg-slate-100 rounded-lg">
               <select
+                disabled
                 class="w-full p-2 rounded-lg bg-slate-100"
                 name="planJobType"
                 id="planJobType"
@@ -73,11 +71,6 @@
                 <option selected disabled value="">
                   Wybierz rodzaj robót...
                 </option>
-                <option value="Kafarowanie słupów konstrukcji">
-                  Kafarowanie słupów konstrukcji
-                </option>
-                <option value="Montaż PV modułów">Montaż PV modułów</option>
-                <option value="Montaż ogrodzenia">Montaż ogrodzenia</option>
               </select>
             </div>
             <div class="flex flex-row gap-2 items-center justify-end p-2">
@@ -205,6 +198,7 @@
           </div>
           <form
             id="detailPlanListForm"
+            oninput="onchangeDetailPlanListForm()"
             class="flex flex-col justify-center items-start px-2"
           ></form>
         </section>
