@@ -5,9 +5,19 @@ const chartEmployeesPlan = createEmployeesQuantityChart(_('chartEmployeesPlan'))
 const planDateStart = _('planDateStart')
 const planDateEnd = _('planDateEnd')
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   setPlanDatesRange()
+  const data = await fetchData()
+  console.log(data)
 })
+
+async function fetchData() {
+  const data = await fetch(
+    'https://script.google.com/a/macros/ispik.eu/s/AKfycbzJCQ-72SHrtq5rWk10ligJlfk7TFj3r4rRALmZK0VSUINcMDWE_bzwdizqkOIUGdm0/exec'
+  )
+  const json = await data.json()
+  return json
+}
 
 planDateStart.addEventListener('change', (e) => {
   const value = e.target.value
