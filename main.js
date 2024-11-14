@@ -272,6 +272,7 @@ function calculateHelpingResult(e) {
 }
 
 function floatInputPattern(e) {
+  if (e.id === 'planJobDayQuantity') onchangeDetailPlanListForm()
   e.value = e.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')
 }
 
@@ -435,14 +436,14 @@ function createDatesRangeFormInnerHtml(dates) {
       )}</p>
       <div class="flex flex-col gap-1 items-center mr-auto">
         <div class="flex flex-row gap-2">
-          <select class="bg-slate-100 py-1 px-2 rounded-md">
+          <select class="bg-slate-100 py-1 px-2 rounded-md border border-blue-300">
             <option disabled selected value="">St. brygadzista</option>
             <option value="Chuprin">Chuprin</option>
             <option value="Ivantsov">Ivantsov</option>
             <option value="Kruk">Kruk</option>
           </select>
           <input
-            class="py-1 px-2 rounded-md text-right w-12 bg-slate-100"
+            class="py-1 px-2 rounded-md text-right w-12 bg-slate-100 border border-blue-300"
             type="text"
             maxlength="2"
             oninput="intInputPattern(this)"
@@ -481,14 +482,14 @@ function createDatesRangeFormInnerHtml(dates) {
 function createNewForemanInputsBlock() {
   const newDiv = document.createElement('div')
   newDiv.classList.add('flex', 'flex-row', 'gap-2')
-  newDiv.innerHTML = `<select class="bg-slate-100 py-1 px-2 rounded-md">
+  newDiv.innerHTML = `<select class="bg-slate-100 py-1 px-2 rounded-md border border-blue-300">
       <option disabled selected value="">St. brygadzista</option>
       <option value="Chuprin">Chuprin</option>
       <option value="Ivantsov">Ivantsov</option>
       <option value="Kruk">Kruk</option>
     </select>
     <input
-      class="py-1 px-2 rounded-md text-right w-12 bg-slate-100"
+      class="py-1 px-2 rounded-md text-right w-12 bg-slate-100 border border-blue-300"
       type="text"
       maxlength="2"
       oninput="intInputPattern(this)"

@@ -34,7 +34,7 @@
             </div>
             <div class="rounded-lg">
               <select
-                class="w-full p-2 rounded-lg bg-slate-100"
+                class="w-full p-2 rounded-lg bg-slate-100 border border-blue-300"
                 name="planObject"
                 id="planObject"
               >
@@ -48,7 +48,7 @@
                 Data od:
                 <input
                   id="planDateStart"
-                  class="bg-slate-100 p-2 ml-2 rounded-lg"
+                  class="bg-slate-100 p-2 ml-2 rounded-lg border border-blue-300"
                   type="date"
                 />
               </div>
@@ -56,7 +56,7 @@
                 Data do:
                 <input
                   id="planDateEnd"
-                  class="bg-slate-100 p-2 ml-2 rounded-lg"
+                  class="bg-slate-100 p-2 ml-2 rounded-lg border border-blue-300"
                   type="date"
                 />
               </div>
@@ -64,7 +64,7 @@
             <div class="bg-slate-100 rounded-lg">
               <select
                 disabled
-                class="w-full p-2 rounded-lg bg-slate-100"
+                class="w-full p-2 rounded-lg bg-slate-100 border border-blue-300"
                 name="planJobType"
                 id="planJobType"
               >
@@ -85,7 +85,7 @@
               Planowana ilość:
               <input
                 id="planJobDayQuantity"
-                class="text-right p-2 w-max rounded-lg bg-slate-100"
+                class="text-right p-2 w-max rounded-lg bg-slate-100 border border-blue-300"
                 value="0"
                 type="text"
                 maxlength="5"
@@ -125,7 +125,7 @@
             <div class="w-full">
               <select
                 onchange="onChangeCalcDrop1(this)"
-                class="w-full p-2 rounded-lg bg-slate-100"
+                class="w-full p-2 rounded-lg bg-slate-100 border border-blue-300"
                 name="calcDrop1"
                 id="calcDrop1"
               >
@@ -142,7 +142,7 @@
             <div class="w-auto">
               <input
                 id="calcInput1"
-                class="p-2 rounded-lg text-right max-w-24 bg-slate-100"
+                class="p-2 rounded-lg text-right max-w-24 bg-slate-100 border border-blue-300"
                 maxlength="5"
                 oninput="calculateHelpingResult(this)"
               />
@@ -153,7 +153,7 @@
               <select
                 disabled
                 onchange="setHelpingCategory()"
-                class="w-full p-2 rounded-lg bg-slate-100"
+                class="w-full p-2 rounded-lg bg-slate-100 border border-blue-300"
                 name="calcDrop2"
                 id="calcDrop2"
               >
@@ -163,7 +163,7 @@
             <div class="w-auto">
               <input
                 id="calcInput2"
-                class="p-2 rounded-lg text-right max-w-24 bg-slate-100"
+                class="p-2 rounded-lg text-right max-w-24 bg-slate-100 border border-blue-300"
                 maxlength="5"
                 oninput="calculateHelpingResult(this)"
                 disabled
