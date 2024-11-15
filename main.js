@@ -11,15 +11,22 @@ const planDateEnd = _('planDateEnd')
 document.addEventListener('DOMContentLoaded', async () => {
   setPlanDatesRange()
   setProjectDropdownOptions(JSON.parse(localStorage.getItem('projects')))
-  // const { jobs, projects, factJobsDetail, factJobsGeneral, planJobsGeneral } =
-  //   await fetchData()
-  // setToLocalStorage(
-  //   ['jobs', jobs],
-  //   ['projects', projects],
-  //   ['factJobsDetail', factJobsDetail],
-  //   ['factJobsGeneral', factJobsGeneral],
-  //   ['planJobsGeneral', planJobsGeneral]
-  // )
+  const {
+    jobs,
+    foremen,
+    projects,
+    factJobsDetail,
+    factJobsGeneral,
+    planJobsGeneral,
+  } = await fetchData()
+  setToLocalStorage(
+    ['jobs', jobs],
+    ['foremen', foremen],
+    ['projects', projects],
+    ['factJobsDetail', factJobsDetail],
+    ['factJobsGeneral', factJobsGeneral],
+    ['planJobsGeneral', planJobsGeneral]
+  )
 })
 
 function setToLocalStorage(...items) {
@@ -119,10 +126,11 @@ function onchangeDetailPlanListForm() {
 
 function updatePlanQuantitySum(data) {
   const coeff = parseFloat(_('planJobDayQuantity').value) || 0
-  _('planQuantitySum').textContent =
+  _('planQuantitySum').textContent = Math.round(
     data
       .map((v) => v.employees.reduce((a, b) => Number(a) + Number(b), 0))
       .reduce((a, b) => Number(a) + Number(b), 0) * coeff
+  )
 }
 
 function setProjectDropdownOptions(projects) {
@@ -369,6 +377,11 @@ function updateJobPlanChart(labels, data) {
   chartJobPlan.update()
 }
 
+function comparePlanSumAndTotal() {
+  const sum = _('planQuantitySum').textContent
+  const total = planQuantityTotal.textContent
+}
+
 function createEmployeesQuantityChart(ctx) {
   return new Chart(ctx, {
     type: 'line',
@@ -425,6 +438,7 @@ function getPolishMonthName(num) {
 }
 
 function createDatesRangeFormInnerHtml(dates) {
+  const foremen = JSON.parse(localStorage.getItem('foremen'))
   return dates
     .map((v) => {
       const color = v.isWeekend ? '#e2e8f0' : '#f8fafc'
@@ -439,15 +453,14 @@ function createDatesRangeFormInnerHtml(dates) {
         <div class="flex flex-row gap-2">
           <select class="bg-slate-100 py-1 px-2 rounded-md border border-blue-300">
             <option disabled selected value="">St. brygadzista</option>
-            <option value="Chuprin">Chuprin</option>
-            <option value="Ivantsov">Ivantsov</option>
-            <option value="Kruk">Kruk</option>
+            ${foremen.map((v) => `<option value="${v}">${v}</option>`).join('')}
           </select>
           <input
             class="py-1 px-2 rounded-md text-right w-12 bg-slate-100 border border-blue-300"
             type="text"
             maxlength="2"
             oninput="intInputPattern(this)"
+            autocomplete="off"
           />
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -481,19 +494,19 @@ function createDatesRangeFormInnerHtml(dates) {
 }
 
 function createNewForemanInputsBlock() {
+  const foremen = JSON.parse(localStorage.getItem('foremen'))
   const newDiv = document.createElement('div')
   newDiv.classList.add('flex', 'flex-row', 'gap-2')
   newDiv.innerHTML = `<select class="bg-slate-100 py-1 px-2 rounded-md border border-blue-300">
       <option disabled selected value="">St. brygadzista</option>
-      <option value="Chuprin">Chuprin</option>
-      <option value="Ivantsov">Ivantsov</option>
-      <option value="Kruk">Kruk</option>
+      ${foremen.map((v) => `<option value="${v}">${v}</option>`).join('')}
     </select>
     <input
       class="py-1 px-2 rounded-md text-right w-12 bg-slate-100 border border-blue-300"
       type="text"
       maxlength="2"
       oninput="intInputPattern(this)"
+      autocomplete="off"
     />
     <svg
       class="cursor-pointer"
