@@ -11,22 +11,22 @@ const planDateEnd = _('planDateEnd')
 document.addEventListener('DOMContentLoaded', async () => {
   setPlanDatesRange()
   setProjectDropdownOptions(JSON.parse(localStorage.getItem('projects')))
-  const {
-    jobs,
-    foremen,
-    projects,
-    factJobsDetail,
-    factJobsGeneral,
-    planJobsGeneral,
-  } = await fetchData()
-  setToLocalStorage(
-    ['jobs', jobs],
-    ['foremen', foremen],
-    ['projects', projects],
-    ['factJobsDetail', factJobsDetail],
-    ['factJobsGeneral', factJobsGeneral],
-    ['planJobsGeneral', planJobsGeneral]
-  )
+  // const {
+  //   jobs,
+  //   foremen,
+  //   projects,
+  //   factJobsDetail,
+  //   factJobsGeneral,
+  //   planJobsGeneral,
+  // } = await fetchData()
+  // setToLocalStorage(
+  //   ['jobs', jobs],
+  //   ['foremen', foremen],
+  //   ['projects', projects],
+  //   ['factJobsDetail', factJobsDetail],
+  //   ['factJobsGeneral', factJobsGeneral],
+  //   ['planJobsGeneral', planJobsGeneral]
+  // )
 })
 
 function setToLocalStorage(...items) {
@@ -51,6 +51,7 @@ planDateStart.addEventListener('change', (e) => {
   setPlanEndDatesRange(datesDifference, datesDifference + 366)
   const daysBetween = getDatesRange()
   updatePlanDataAndCharts(daysBetween)
+  updatePlanQuantitySum()
 })
 
 planDateEnd.addEventListener('change', (e) => {
@@ -60,6 +61,7 @@ planDateEnd.addEventListener('change', (e) => {
   if (value === '' || value.startsWith(0)) return
   const daysBetween = getDatesRange()
   updatePlanDataAndCharts(daysBetween)
+  updatePlanQuantitySum()
 })
 
 planObject.addEventListener('input', () => {
@@ -74,6 +76,7 @@ planObject.addEventListener('input', () => {
   planJobType.innerHTML = options.join('')
   planJobType.removeAttribute('disabled')
   planQuantityTotal.textContent = 0
+  onchangeDetailPlanListForm()
 })
 
 planJobType.addEventListener('input', () => {
@@ -84,6 +87,7 @@ planJobType.addEventListener('input', () => {
     (v) => v.job === job && v.project === project
   )[0]
   planQuantityTotal.textContent = projectJob?.quantity || 0
+  onchangeDetailPlanListForm()
 })
 
 function onchangeDetailPlanListForm() {
@@ -122,9 +126,20 @@ function onchangeDetailPlanListForm() {
     data,
     data.map((v) => v.employees.reduce((a, b) => Number(a) + Number(b), 0))
   )
+  const comparingResult = getComparePlanSumAndTotal()
+  const color = getChartColor(comparingResult)
+  updateEmployeesQuantityChartColor(color)
+  updateJobPlanChartColor(color)
+
+  const btn = _('submitFormBtn')
+
+  if (_('planQuantitySum').textContent > 0 && comparingResult === 0)
+    btn.classList.remove('hidden')
+  else if (btn) btn.classList.add('hidden')
 }
 
 function updatePlanQuantitySum(data) {
+  if (!data) return (_('planQuantitySum').textContent = 0)
   const coeff = parseFloat(_('planJobDayQuantity').value) || 0
   _('planQuantitySum').textContent = Math.round(
     data
@@ -239,6 +254,10 @@ function resetGeneralPlanInfoForm() {
   _('generalPlanInfoForm').reset()
   _('planDaysTotal').textContent = '0'
   _('planDaysWork').textContent = '0)'
+  onchangeDetailPlanListForm()
+  detailPlanListForm.innerHTML = ''
+  planJobType.setAttribute('disabled', true)
+  planQuantityTotal.textContent = 0
 }
 
 function onChangeCalcDrop1(e) {
@@ -311,7 +330,8 @@ function addOneMoreForemanBlock(e) {
 }
 
 function updateDatesRangeFormInnerHtml(dates) {
-  detailPlanListForm.innerHTML = createDatesRangeFormInnerHtml(dates)
+  detailPlanListForm.innerHTML =
+    createDatesRangeFormInnerHtml(dates) + createSubmitFormButton()
 }
 
 function updatePlanDataAndCharts(
@@ -329,6 +349,20 @@ function updatePlanDataAndCharts(
     daysBetween.dates,
     dataEmployees || new Array(daysBetween.dates.length).fill(0)
   )
+}
+
+function getChartColor(result) {
+  if (result === 0) return 'rgb(75, 192, 192)'
+  if (result > 0) return 'rgb(239, 68, 68)'
+  return 'rgb(184, 197, 214)'
+}
+
+function getComparePlanSumAndTotal() {
+  const sum = _('planQuantitySum').textContent
+  const total = planQuantityTotal.textContent
+  const min = Math.floor(total * 0.99)
+  const max = Math.round(total * 1.01)
+  return sum < min ? -1 : sum > max ? 1 : 0
 }
 
 function createJobPlanChart(ctx) {
@@ -373,13 +407,12 @@ function updateJobPlanChart(labels, data) {
     return `${date.getDate()} ${getPolishMonthName(date.getMonth())}`
   })
   chartJobPlan.data.datasets[0].data = data.map((v) => v * coeff)
-  // chartJobPlan.data.datasets[0].borderColor = 'red'
   chartJobPlan.update()
 }
 
-function comparePlanSumAndTotal() {
-  const sum = _('planQuantitySum').textContent
-  const total = planQuantityTotal.textContent
+function updateJobPlanChartColor(color) {
+  chartJobPlan.data.datasets[0].borderColor = color
+  chartJobPlan.update()
 }
 
 function createEmployeesQuantityChart(ctx) {
@@ -392,6 +425,7 @@ function createEmployeesQuantityChart(ctx) {
           type: 'bar',
           label: 'Pracowniki plan',
           data: [0],
+          borderRadius: 5,
           backgroundColor: 'rgb(75, 192, 192)',
         },
       ],
@@ -420,6 +454,11 @@ function updateEmployeesQuantityChart(labels, data) {
   chartEmployeesPlan.update()
 }
 
+function updateEmployeesQuantityChartColor(color) {
+  chartEmployeesPlan.data.datasets[0].backgroundColor = color
+  chartEmployeesPlan.update()
+}
+
 function getPolishMonthName(num) {
   return [
     'sty',
@@ -439,13 +478,14 @@ function getPolishMonthName(num) {
 
 function createDatesRangeFormInnerHtml(dates) {
   const foremen = JSON.parse(localStorage.getItem('foremen'))
+  const lastIndx = dates.length - 1
   return dates
-    .map((v) => {
+    .map((v, i) => {
       const color = v.isWeekend ? '#e2e8f0' : '#f8fafc'
       const date = new Date(v.date)
-      return `<div class="flex flex-row gap-2 w-full items-center justify-start p-1 border-t-2 border-blue-100 ${
-        v.isWeekend ? `bg-[${color}]` : ''
-      }">
+      return `<div class="flex flex-row gap-2 w-full items-center justify-start p-1 border-${
+        i === lastIndx ? 'y' : 't'
+      }-2 border-blue-100 ${v.isWeekend ? `bg-[${color}]` : ''}">
       <p class="w-16">${date.getDate()} ${getPolishMonthName(
         date.getMonth()
       )}</p>
@@ -522,4 +562,14 @@ function createNewForemanInputsBlock() {
       />
     </svg>`
   return newDiv
+}
+
+function createSubmitFormButton() {
+  return `<div class="flex flex-row min-w-full justify-end">
+    <button
+      type="submit"
+      id="submitFormBtn"
+      class="bg-blue-100 py-1 px-3 mt-2 rounded-xl border-2 border-blue-400 hidden"
+    >Zatwierdź</button>
+  </div>`
 }
