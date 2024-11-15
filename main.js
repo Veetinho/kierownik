@@ -365,6 +365,7 @@ function updateJobPlanChart(labels, data) {
     return `${date.getDate()} ${getPolishMonthName(date.getMonth())}`
   })
   chartJobPlan.data.datasets[0].data = data.map((v) => v * coeff)
+  // chartJobPlan.data.datasets[0].borderColor = 'red'
   chartJobPlan.update()
 }
 
