@@ -37,25 +37,33 @@ async function fetchData() {
   return json
 }
 
+_('detailPlanListForm').addEventListener('submit', (e) => {
+  e.preventDefault()
+  const detailPlanListFormData = getDetailPlanListFormData()
+  const generalPlanInfoFormData = getGeneralPlanListFormData()
+  console.log(detailPlanListFormData)
+  console.log(generalPlanInfoFormData)
+})
+
 _('planDateStart').addEventListener('change', (e) => {
   const value = e.target.value
   if (value === '' || value.startsWith(0)) return
-  _('planDateEnd').value = value
+  setPlanDateEnd(value)
   const datesDifference = getDaysDifference(value)
   setPlanEndDatesRange(datesDifference, datesDifference + 366)
   const daysBetween = getDatesRange()
-  updatePlanDataAndCharts(daysBetween)
   updatePlanQuantitySum()
+  updatePlanDataAndCharts(daysBetween)
 })
 
 _('planDateEnd').addEventListener('change', (e) => {
   const value = e.target.value
   if (new Date(value).getTime() < new Date(_('planDateStart').value))
-    _('planDateEnd').value = _('planDateStart').value
+    setPlanDateEnd(_('planDateStart').value)
   if (value === '' || value.startsWith(0)) return
   const daysBetween = getDatesRange()
-  updatePlanDataAndCharts(daysBetween)
   updatePlanQuantitySum()
+  updatePlanDataAndCharts(daysBetween)
 })
 
 _('planObject').addEventListener('input', () => {
@@ -67,9 +75,10 @@ _('planObject').addEventListener('input', () => {
   options.unshift(
     '<option selected disabled value="">Wybierz rodzaj robót...</option>'
   )
-  _('planJobType').innerHTML = options.join('')
-  _('planJobType').removeAttribute('disabled')
-  _('planQuantityTotal').textContent = 0
+  updatePlanJobType(options.join(''))
+  updatePlanJobDayQuantity()
+  updatePlanQuantityTotal()
+  updatePlanQuantitySum()
   onchangeDetailPlanListForm()
 })
 
@@ -80,9 +89,59 @@ _('planJobType').addEventListener('input', () => {
   const projectJob = jobs.filter(
     (v) => v.job === job && v.project === project
   )[0]
-  _('planQuantityTotal').textContent = projectJob?.quantity || 0
+  updatePlanJobDayQuantity()
+  updatePlanQuantityTotal(projectJob?.quantity || 0)
+  updatePlanQuantitySum()
   onchangeDetailPlanListForm()
 })
+
+function getDatesRange() {
+  let ds = _('planDateStart').value
+  let de = _('planDateEnd').value
+  if (ds === '' || de === '' || de.startsWith(0) || ds.startsWith(0)) return
+  const daysBetween = {
+    dates: [],
+    allDays: 0,
+    workDays: 0,
+  }
+  while (ds !== de) {
+    daysBetween.dates.push({
+      date: ds,
+      isWeekend: new Date(ds).getDay() === 0,
+    })
+    daysBetween.allDays++
+    if (new Date(ds).getDay() !== 0) daysBetween.workDays++
+    ds = new Date(new Date(ds).getTime() + 24 * 60 * 60 * 1000)
+      .toISOString()
+      .replace(/T.+/g, '')
+  }
+  daysBetween.allDays++
+  daysBetween.dates.push({
+    date: ds,
+    isWeekend: new Date(ds).getDay() === 0,
+  })
+  if (new Date(ds).getDay() !== 0) daysBetween.workDays++
+  return daysBetween
+}
+
+function setPlanDateEnd(date) {
+  _('planDateEnd').value = date
+}
+
+function updatePlanJobType(innerHtml, removeDisabled = true) {
+  _('planJobType').innerHTML = innerHtml
+  removeDisabled === true
+    ? _('planJobType').removeAttribute('disabled')
+    : _('planJobType').setAttribute('disabled', true)
+}
+
+function updatePlanQuantityTotal(value = 0) {
+  _('planQuantityTotal').textContent = value
+}
+
+function updatePlanJobDayQuantity(value = 0) {
+  _('planJobDayQuantity').value = value
+}
 
 function onchangeDetailPlanListForm() {
   const rows = _('detailPlanListForm').getElementsByClassName('w-full')
@@ -161,35 +220,6 @@ function setDaysQuantity(daysBetween) {
   _('planDaysWork').textContent = `${daysBetween.workDays.toString()})`
 }
 
-function getDatesRange() {
-  let ds = _('planDateStart').value
-  let de = _('planDateEnd').value
-  if (ds === '' || de === '' || de.startsWith(0) || ds.startsWith(0)) return
-  const daysBetween = {
-    dates: [],
-    allDays: 0,
-    workDays: 0,
-  }
-  while (ds !== de) {
-    daysBetween.dates.push({
-      date: ds,
-      isWeekend: new Date(ds).getDay() === 0,
-    })
-    daysBetween.allDays++
-    if (new Date(ds).getDay() !== 0) daysBetween.workDays++
-    ds = new Date(new Date(ds).getTime() + 24 * 60 * 60 * 1000)
-      .toISOString()
-      .replace(/T.+/g, '')
-  }
-  daysBetween.allDays++
-  daysBetween.dates.push({
-    date: ds,
-    isWeekend: new Date(ds).getDay() === 0,
-  })
-  if (new Date(ds).getDay() !== 0) daysBetween.workDays++
-  return daysBetween
-}
-
 function getDaysDifference(value) {
   const diff = parseInt((new Date(value).getTime() - Date.now()) / 86_400_000)
   return diff > 0 ? 1 + diff : diff
@@ -238,7 +268,7 @@ function setPlanEndDatesRange(
 
 function resetHelpingCalcForm() {
   _('helpingCalcForm').reset()
-  calcDrop2.setAttribute('disabled', true)
+  _('calcDrop2').setAttribute('disabled', true)
   _('calcInput2').setAttribute('disabled', true)
   _('calcResultValue').textContent = ''
   _('calcResultCategory').textContent = ''
@@ -248,10 +278,10 @@ function resetGeneralPlanInfoForm() {
   _('generalPlanInfoForm').reset()
   _('planDaysTotal').textContent = '0'
   _('planDaysWork').textContent = '0)'
-  onchangeDetailPlanListForm()
   _('detailPlanListForm').innerHTML = ''
   _('planJobType').setAttribute('disabled', true)
   _('planQuantityTotal').textContent = 0
+  onchangeDetailPlanListForm()
 }
 
 function onChangeCalcDrop1(e) {
@@ -453,6 +483,43 @@ function updateEmployeesQuantityChartColor(color) {
   chartEmployeesPlan.update()
 }
 
+function getDetailPlanListFormData() {
+  const rows = _('detailPlanListForm').getElementsByClassName('w-full')
+  const data = []
+  let rowIndx = 0
+  while (rowIndx < rows.length) {
+    const dayData = {
+      date: null,
+      foremen: [],
+      employees: [],
+    }
+    const row = rows[rowIndx]
+    dayData.date = row.getElementsByTagName('p')[0].getAttribute('data-date')
+    const foremen = row.getElementsByTagName('select')
+    let foremenIndx = 0
+    while (foremenIndx < foremen.length) {
+      dayData.foremen.push(foremen[foremenIndx].value)
+      foremenIndx++
+    }
+    const employees = row.getElementsByTagName('input')
+    let employeeIndx = 0
+    while (employeeIndx < employees.length) {
+      dayData.employees.push(employees[employeeIndx].value)
+      employeeIndx++
+    }
+    data.push(dayData)
+    rowIndx++
+  }
+  return data
+}
+
+function getGeneralPlanListFormData() {
+  const formData = new FormData(_('generalPlanInfoForm'))
+  const dataAsObject = {}
+  for (const pair of formData.entries()) dataAsObject[pair[0]] = pair[1]
+  return dataAsObject
+}
+
 function getPolishMonthName(num) {
   return [
     'sty',
@@ -480,12 +547,12 @@ function createDatesRangeFormInnerHtml(dates) {
       return `<div class="flex flex-row gap-2 w-full items-center justify-start p-1 border-${
         i === lastIndx ? 'y' : 't'
       }-2 border-blue-100 ${v.isWeekend ? `bg-[${color}]` : ''}">
-      <p class="w-16">${date.getDate()} ${getPolishMonthName(
-        date.getMonth()
-      )}</p>
+      <p class="w-16" data-date="${
+        v.date
+      }">${date.getDate()} ${getPolishMonthName(date.getMonth())}</p>
       <div class="flex flex-col gap-1 items-center mr-auto">
         <div class="flex flex-row gap-2">
-          <select class="bg-slate-100 py-1 px-2 rounded-md border border-blue-300">
+          <select class="bg-slate-100 py-1 px-2 rounded-md border border-blue-300" required>
             <option disabled selected value="">St. brygadzista</option>
             ${foremen.map((v) => `<option value="${v}">${v}</option>`).join('')}
           </select>
@@ -495,6 +562,7 @@ function createDatesRangeFormInnerHtml(dates) {
             maxlength="2"
             oninput="intInputPattern(this)"
             autocomplete="off"
+            required
           />
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -531,7 +599,7 @@ function createNewForemanInputsBlock() {
   const foremen = JSON.parse(localStorage.getItem('foremen'))
   const newDiv = document.createElement('div')
   newDiv.classList.add('flex', 'flex-row', 'gap-2')
-  newDiv.innerHTML = `<select class="bg-slate-100 py-1 px-2 rounded-md border border-blue-300">
+  newDiv.innerHTML = `<select class="bg-slate-100 py-1 px-2 rounded-md border border-blue-300" required>
       <option disabled selected value="">St. brygadzista</option>
       ${foremen.map((v) => `<option value="${v}">${v}</option>`).join('')}
     </select>
@@ -541,6 +609,7 @@ function createNewForemanInputsBlock() {
       maxlength="2"
       oninput="intInputPattern(this)"
       autocomplete="off"
+      required
     />
     <svg
       class="cursor-pointer"
