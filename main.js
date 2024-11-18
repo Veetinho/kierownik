@@ -1,12 +1,6 @@
 const _ = (id) => document.getElementById(id)
-const detailPlanListForm = _('detailPlanListForm')
 const chartJobPlan = createJobPlanChart(_('chartJobPlan'))
 const chartEmployeesPlan = createEmployeesQuantityChart(_('chartEmployeesPlan'))
-const planObject = _('planObject')
-const planJobType = _('planJobType')
-const planQuantityTotal = _('planQuantityTotal')
-const planDateStart = _('planDateStart')
-const planDateEnd = _('planDateEnd')
 
 document.addEventListener('DOMContentLoaded', async () => {
   setPlanDatesRange()
@@ -43,10 +37,10 @@ async function fetchData() {
   return json
 }
 
-planDateStart.addEventListener('change', (e) => {
+_('planDateStart').addEventListener('change', (e) => {
   const value = e.target.value
   if (value === '' || value.startsWith(0)) return
-  planDateEnd.value = value
+  _('planDateEnd').value = value
   const datesDifference = getDaysDifference(value)
   setPlanEndDatesRange(datesDifference, datesDifference + 366)
   const daysBetween = getDatesRange()
@@ -54,18 +48,18 @@ planDateStart.addEventListener('change', (e) => {
   updatePlanQuantitySum()
 })
 
-planDateEnd.addEventListener('change', (e) => {
+_('planDateEnd').addEventListener('change', (e) => {
   const value = e.target.value
-  if (new Date(value).getTime() < new Date(planDateStart.value))
-    planDateEnd.value = planDateStart.value
+  if (new Date(value).getTime() < new Date(_('planDateStart').value))
+    _('planDateEnd').value = _('planDateStart').value
   if (value === '' || value.startsWith(0)) return
   const daysBetween = getDatesRange()
   updatePlanDataAndCharts(daysBetween)
   updatePlanQuantitySum()
 })
 
-planObject.addEventListener('input', () => {
-  const project = planObject.value
+_('planObject').addEventListener('input', () => {
+  const project = _('planObject').value
   const jobs = JSON.parse(localStorage.getItem('planJobsGeneral'))
   const options = jobs
     .filter((v) => v.project === project)
@@ -73,25 +67,25 @@ planObject.addEventListener('input', () => {
   options.unshift(
     '<option selected disabled value="">Wybierz rodzaj robót...</option>'
   )
-  planJobType.innerHTML = options.join('')
-  planJobType.removeAttribute('disabled')
-  planQuantityTotal.textContent = 0
+  _('planJobType').innerHTML = options.join('')
+  _('planJobType').removeAttribute('disabled')
+  _('planQuantityTotal').textContent = 0
   onchangeDetailPlanListForm()
 })
 
-planJobType.addEventListener('input', () => {
-  const project = planObject.value
-  const job = planJobType.value
+_('planJobType').addEventListener('input', () => {
+  const project = _('planObject').value
+  const job = _('planJobType').value
   const jobs = JSON.parse(localStorage.getItem('planJobsGeneral'))
   const projectJob = jobs.filter(
     (v) => v.job === job && v.project === project
   )[0]
-  planQuantityTotal.textContent = projectJob?.quantity || 0
+  _('planQuantityTotal').textContent = projectJob?.quantity || 0
   onchangeDetailPlanListForm()
 })
 
 function onchangeDetailPlanListForm() {
-  const rows = detailPlanListForm.getElementsByClassName('w-full')
+  const rows = _('detailPlanListForm').getElementsByClassName('w-full')
   const data = []
   let rowIndx = 0
   while (rowIndx < rows.length) {
@@ -159,7 +153,7 @@ function setProjectDropdownOptions(projects) {
   options.unshift(
     '<option selected disabled value="">Wybierz obiekt...</option>'
   )
-  planObject.innerHTML = options.join('')
+  _('planObject').innerHTML = options.join('')
 }
 
 function setDaysQuantity(daysBetween) {
@@ -168,8 +162,8 @@ function setDaysQuantity(daysBetween) {
 }
 
 function getDatesRange() {
-  let ds = planDateStart.value
-  let de = planDateEnd.value
+  let ds = _('planDateStart').value
+  let de = _('planDateEnd').value
   if (ds === '' || de === '' || de.startsWith(0) || ds.startsWith(0)) return
   const daysBetween = {
     dates: [],
@@ -210,13 +204,13 @@ function setPlanStartDatesRange(
   daysFromTodayForMin = -31,
   daysFromTodayForMax = 365
 ) {
-  planDateStart.setAttribute(
+  _('planDateStart').setAttribute(
     'min',
     new Date(Date.now() + daysFromTodayForMin * 24 * 60 * 60 * 1000)
       .toISOString()
       .replace(/T.+/g, '')
   )
-  planDateStart.setAttribute(
+  _('planDateStart').setAttribute(
     'max',
     new Date(Date.now() + daysFromTodayForMax * 24 * 60 * 60 * 1000)
       .toISOString()
@@ -228,13 +222,13 @@ function setPlanEndDatesRange(
   daysFromTodayForMin = -30,
   daysFromTodayForMax = 366
 ) {
-  planDateEnd.setAttribute(
+  _('planDateEnd').setAttribute(
     'min',
     new Date(Date.now() + daysFromTodayForMin * 24 * 60 * 60 * 1000)
       .toISOString()
       .replace(/T.+/g, '')
   )
-  planDateEnd.setAttribute(
+  _('planDateEnd').setAttribute(
     'max',
     new Date(Date.now() + daysFromTodayForMax * 24 * 60 * 60 * 1000)
       .toISOString()
@@ -255,9 +249,9 @@ function resetGeneralPlanInfoForm() {
   _('planDaysTotal').textContent = '0'
   _('planDaysWork').textContent = '0)'
   onchangeDetailPlanListForm()
-  detailPlanListForm.innerHTML = ''
-  planJobType.setAttribute('disabled', true)
-  planQuantityTotal.textContent = 0
+  _('detailPlanListForm').innerHTML = ''
+  _('planJobType').setAttribute('disabled', true)
+  _('planQuantityTotal').textContent = 0
 }
 
 function onChangeCalcDrop1(e) {
@@ -291,7 +285,7 @@ function calculateHelpingResult(e) {
   const calcInput2 = _('calcInput2').value
   if (calcInput1 && calcInput2) {
     _('calcResultValue').textContent = (
-      planQuantityTotal.textContent /
+      _('planQuantityTotal').textContent /
       calcInput1 /
       calcInput2
     ).toFixed(2)
@@ -330,7 +324,7 @@ function addOneMoreForemanBlock(e) {
 }
 
 function updateDatesRangeFormInnerHtml(dates) {
-  detailPlanListForm.innerHTML =
+  _('detailPlanListForm').innerHTML =
     createDatesRangeFormInnerHtml(dates) + createSubmitFormButton()
 }
 
@@ -359,7 +353,7 @@ function getChartColor(result) {
 
 function getComparePlanSumAndTotal() {
   const sum = _('planQuantitySum').textContent
-  const total = planQuantityTotal.textContent
+  const total = _('planQuantityTotal').textContent
   const min = Math.floor(total * 0.99)
   const max = Math.round(total * 1.01)
   return sum < min ? -1 : sum > max ? 1 : 0
