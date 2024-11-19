@@ -628,7 +628,7 @@ function createNewForemanInputsBlock() {
 }
 
 function createSubmitFormButton() {
-  return `<div class="flex flex-row min-w-full justify-end">
+  return `<div class="flex flex-row min-w-full justify-end mb-2">
     <button
       type="submit"
       id="submitFormBtn"
