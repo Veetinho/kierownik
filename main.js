@@ -513,6 +513,20 @@ function getDetailPlanListFormData() {
   return data
 }
 
+function fillInDetailPlanListForm() {
+  const rows = _('detailPlanListForm').getElementsByClassName('w-full')
+  if (rows.length < 2) return
+  const row = rows[0]
+  const foreman = row.getElementsByTagName('select')[0].value
+  const quantity = row.getElementsByTagName('input')[0].value
+  if (foreman === '' || quantity === '') return
+  for (let r = 1; r < rows.length; r++) {
+    rows[r].getElementsByTagName('select')[0].value = foreman
+    rows[r].getElementsByTagName('input')[0].value = quantity
+  }
+  onchangeDetailPlanListForm()
+}
+
 function getGeneralPlanListFormData() {
   const formData = new FormData(_('generalPlanInfoForm'))
   const dataAsObject = {}
