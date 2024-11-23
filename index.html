@@ -8,113 +8,215 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>Kierownik</title>
   </head>
-  <body>
-    <nav
-      class="fixed top-0 z-50 min-w-full bg-slate-200 border-b border-gray-200"
-    >
-      <div class="px-3 py-3 w-full">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center justify-start px-3">
-            <img
-              src="https://ispik.pro/wp-content/uploads/2022/10/cropped-1_Primary_logo_on_transparent_1024.png"
-              class="h-8 me-3"
-              alt="Ispik Logo"
-            />
-          </div>
-          <div class="flex items-center">
-            <div class="flex items-center ms-3">
-              <p
-                class="flex w-8 h-8 rounded-full bg-blue-100 border-2 border-blue-400 text-blue-950 justify-center items-center"
-              >
-                VV
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </nav>
-
-    <aside
-      id="logo-sidebar"
-      class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 bg-slate-100 border-r border-gray-400"
-      aria-label="Sidebar"
-    >
-      <div class="h-full px-3 pb-4 overflow-y-auto bg-slate-100">
-        <ul class="space-y-2 font-medium">
+  <body class="bg-slate-100">
+    <header class="w-full fixed top-0 z-50 bg-slate-200">
+      <div
+        class="container mx-auto p-3 w-full flex flex-row items-center gap-2"
+      >
+        <img
+          src="https://ispik.pro/wp-content/uploads/2022/10/cropped-1_Primary_logo_on_transparent_1024.png"
+          class="h-8 me-3"
+          alt="Ispik Logo"
+        />
+        <ul class="flex items-center justify-between gap-5 text-gray-900 ml-40">
           <li
-            class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-200 group"
+            class="text-center hover:cursor-pointer hover:underline underline-offset-4"
           >
-            <svg
-              class="w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="currentColor"
-              viewBox="0 0 22 21"
-            >
-              <path
-                d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z"
-              />
-              <path
-                d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z"
-              />
-            </svg>
-            <span class="ms-3">Dashboard</span>
+            Job planning
           </li>
           <li
-            class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-200 group"
+            class="text-center hover:cursor-pointer hover:underline underline-offset-4"
           >
-            <svg
-              class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="currentColor"
-              viewBox="0 0 18 18"
-            >
-              <path
-                d="M6.143 0H1.857A1.857 1.857 0 0 0 0 1.857v4.286C0 7.169.831 8 1.857 8h4.286A1.857 1.857 0 0 0 8 6.143V1.857A1.857 1.857 0 0 0 6.143 0Zm10 0h-4.286A1.857 1.857 0 0 0 10 1.857v4.286C10 7.169 10.831 8 11.857 8h4.286A1.857 1.857 0 0 0 18 6.143V1.857A1.857 1.857 0 0 0 16.143 0Zm-10 10H1.857A1.857 1.857 0 0 0 0 11.857v4.286C0 17.169.831 18 1.857 18h4.286A1.857 1.857 0 0 0 8 16.143v-4.286A1.857 1.857 0 0 0 6.143 10Zm10 0h-4.286A1.857 1.857 0 0 0 10 11.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 18 16.143v-4.286A1.857 1.857 0 0 0 16.143 10Z"
-              />
-            </svg>
-            <span class="flex-1 ms-3 whitespace-nowrap">Kanban</span>
+            Finance
           </li>
         </ul>
-      </div>
-    </aside>
-
-    <main class="mt-14 ml-64">
-      <div
-        class="min-h-screen mx-auto bg-slate-100 px-2 mb-3 overflow-x-scroll"
-      >
-        <section class="flex flex-row gap-3 py-3">
-          <form
-            id="generalPlanInfoForm"
-            class="basis-2/3 border-2 border-blue-400 rounded-2xl px-3 pb-2"
+        <div class="flex items-center ml-auto">
+          <p
+            class="flex w-8 h-8 rounded-full bg-blue-100 border-2 border-blue-400 text-blue-950 justify-center items-center"
           >
-            <div class="grid grid-col-2 gap-2">
-              <div class="p-2 col-span-2 flex justify-center">
-                <div
-                  class="relative group flex w-full justify-center cursor-pointer"
-                >
-                  <div>Informacje ogólne</div>
+            VV
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <main class="container mx-auto flex flex-row items-start gap-4">
+      <aside
+        id="sidebar"
+        class="relative top-0 left-0 z-40 w-64 h-screen pt-16 border border-y-2 border-opacity-50"
+        aria-label="Sidebar"
+      >
+        <div class="h-full px-3 pb-4 overflow-y-auto">
+          <ul class="space-y-2 font-medium">
+            <li
+              class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-200 hover:cursor-pointer group"
+            >
+              <svg
+                class="w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 22 21"
+              >
+                <path
+                  d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z"
+                />
+                <path
+                  d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z"
+                />
+              </svg>
+              <span class="ms-3">First element</span>
+            </li>
+            <li
+              class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-200 hover:cursor-pointer group"
+            >
+              <svg
+                class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 18 18"
+              >
+                <path
+                  d="M6.143 0H1.857A1.857 1.857 0 0 0 0 1.857v4.286C0 7.169.831 8 1.857 8h4.286A1.857 1.857 0 0 0 8 6.143V1.857A1.857 1.857 0 0 0 6.143 0Zm10 0h-4.286A1.857 1.857 0 0 0 10 1.857v4.286C10 7.169 10.831 8 11.857 8h4.286A1.857 1.857 0 0 0 18 6.143V1.857A1.857 1.857 0 0 0 16.143 0Zm-10 10H1.857A1.857 1.857 0 0 0 0 11.857v4.286C0 17.169.831 18 1.857 18h4.286A1.857 1.857 0 0 0 8 16.143v-4.286A1.857 1.857 0 0 0 6.143 10Zm10 0h-4.286A1.857 1.857 0 0 0 10 11.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 18 16.143v-4.286A1.857 1.857 0 0 0 16.143 10Z"
+                />
+              </svg>
+              <span class="flex-1 ms-3 whitespace-nowrap">Second element</span>
+            </li>
+          </ul>
+        </div>
+      </aside>
+
+      <section class="w-full mt-16">
+        <div class="min-h-screen mx-auto px-2 mb-3 overflow-x-scroll">
+          <section class="flex flex-row gap-3 py-3">
+            <form
+              id="generalPlanInfoForm"
+              class="basis-2/3 border-2 border-blue-400 rounded-2xl px-3 pb-2"
+            >
+              <div class="grid grid-col-2 gap-2">
+                <div class="p-2 col-span-2 flex justify-center">
                   <div
-                    class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-80 p-4 bg-slate-200 text-gray-700 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10"
+                    class="relative group flex w-full justify-center cursor-pointer"
                   >
-                    <h3
-                      class="flex flex-row justify-center text-md font-semibold mb-2"
+                    <div>Informacje ogólne</div>
+                    <div
+                      class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-80 p-4 bg-slate-200 text-gray-700 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10"
                     >
-                      Informacje dodatkowe
-                    </h3>
-                    <p class="text-sm">Nazwa projektu: Batkowo</p>
-                    <p class="text-sm mt-1">Dział: Elektryka</p>
-                    <p class="text-sm mt-1">
-                      Rodzaj robót: Kafarowanie słupów konstrukcji
-                    </p>
-                    <p class="text-sm mt-1">Start robót: 21 lis 2024</p>
-                    <p class="text-sm mt-1">Zakończenie robót: 5 mar 2025</p>
+                      <h3
+                        class="flex flex-row justify-center text-md font-semibold mb-2"
+                      >
+                        Informacje dodatkowe
+                      </h3>
+                      <p class="text-sm">Nazwa projektu: Batkowo</p>
+                      <p class="text-sm mt-1">Dział: Elektryka</p>
+                      <p class="text-sm mt-1">
+                        Rodzaj robót: Kafarowanie słupów konstrukcji
+                      </p>
+                      <p class="text-sm mt-1">Start robót: 21 lis 2024</p>
+                      <p class="text-sm mt-1">Zakończenie robót: 5 mar 2025</p>
+                    </div>
                   </div>
+                  <svg
+                    class="cursor-pointer fill-gray-600"
+                    onclick="resetGeneralPlanInfoForm()"
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="24px"
+                    width="24px"
+                    viewBox="0 -960 960 960"
+                  >
+                    <path
+                      d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"
+                    />
+                  </svg>
+                </div>
+                <div class="rounded-lg">
+                  <select
+                    class="w-full p-2 rounded-lg bg-slate-100 border border-blue-300"
+                    name="planObject"
+                    id="planObject"
+                  >
+                    <option selected disabled value="">
+                      Wybierz obiekt...
+                    </option>
+                  </select>
+                </div>
+                <div
+                  class="flex flex-row justify-between items-center rounded-lg ml-2"
+                >
+                  <div>
+                    Data od:
+                    <input
+                      id="planDateStart"
+                      name="planDateStart"
+                      class="bg-slate-100 p-2 ml-2 rounded-lg border border-blue-300"
+                      type="date"
+                    />
+                  </div>
+                  <div>
+                    Data do:
+                    <input
+                      id="planDateEnd"
+                      name="planDateEnd"
+                      class="bg-slate-100 p-2 ml-2 rounded-lg border border-blue-300"
+                      type="date"
+                    />
+                  </div>
+                </div>
+                <div class="bg-slate-100 rounded-lg">
+                  <select
+                    disabled
+                    class="w-full p-2 rounded-lg bg-slate-100 border border-blue-300"
+                    name="planJobType"
+                    id="planJobType"
+                  >
+                    <option selected disabled value="">
+                      Wybierz rodzaj robót...
+                    </option>
+                  </select>
+                </div>
+                <div class="flex flex-row gap-2 items-center justify-end p-2">
+                  Całkowita ilość dni:
+                  <p id="planDaysTotal">0</p>
+                  (roboczych:
+                  <p id="planDaysWork">0)</p>
+                </div>
+                <div
+                  class="flex flex-row items-center justify-between bg-slate-50 rounded-lg ml-2"
+                >
+                  Planowana ilość:
+                  <input
+                    id="planJobDayQuantity"
+                    name="planJobDayQuantity"
+                    class="text-right p-2 w-max rounded-lg bg-slate-100 border border-blue-300"
+                    value="0"
+                    type="text"
+                    maxlength="5"
+                    oninput="floatInputPattern(this)"
+                    autocomplete="off"
+                  />
+                </div>
+                <div class="flex flex-row gap-2 items-center justify-end p-2">
+                  Zaplanowano:
+                  <p id="planQuantitySum">0</p>
+                  /
+                  <p id="planQuantityTotal">0</p>
+                </div>
+              </div>
+            </form>
+            <form
+              id="helpingCalcForm"
+              class="basis-1/3 flex flex-col gap-2 px-2 border-2 border-blue-400 rounded-2xl"
+            >
+              <div
+                class="flex flex-row justify-between items-center min-w-full p-2"
+              >
+                <div class="flex w-full justify-center">
+                  Kalkulator pomocniczy
                 </div>
                 <svg
                   class="cursor-pointer fill-gray-600"
-                  onclick="resetGeneralPlanInfoForm()"
+                  onclick="resetHelpingCalcForm()"
                   xmlns="http://www.w3.org/2000/svg"
                   height="24px"
                   width="24px"
@@ -125,202 +227,112 @@
                   />
                 </svg>
               </div>
-              <div class="rounded-lg">
-                <select
-                  class="w-full p-2 rounded-lg bg-slate-100 border border-blue-300"
-                  name="planObject"
-                  id="planObject"
-                >
-                  <option selected disabled value="">Wybierz obiekt...</option>
-                </select>
-              </div>
-              <div
-                class="flex flex-row justify-between items-center rounded-lg ml-2"
-              >
-                <div>
-                  Data od:
+              <div class="flex flex-row gap-2 items-center">
+                <div class="w-full">
+                  <select
+                    onchange="onChangeCalcDrop1(this)"
+                    class="w-full p-2 rounded-lg bg-slate-100 border border-blue-300"
+                    name="calcDrop1"
+                    id="calcDrop1"
+                  >
+                    <option selected disabled value="">
+                      Wybierz z listy...
+                    </option>
+                    <option value="Ilość dni">Ilość dni</option>
+                    <option value="Ilość pracowników (dziennie)">
+                      Ilość pracowników (dziennie)
+                    </option>
+                    <option value="Ilość płanowana (dziennie)">
+                      Ilość płanowana (dziennie)
+                    </option>
+                  </select>
+                </div>
+                <div class="w-auto">
                   <input
-                    id="planDateStart"
-                    name="planDateStart"
-                    class="bg-slate-100 p-2 ml-2 rounded-lg border border-blue-300"
-                    type="date"
+                    id="calcInput1"
+                    class="p-2 rounded-lg text-right max-w-24 bg-slate-100 border border-blue-300"
+                    maxlength="5"
+                    oninput="calculateHelpingResult(this)"
+                    autocomplete="off"
                   />
                 </div>
-                <div>
-                  Data do:
+              </div>
+              <div class="flex flex-row justify-between gap-2 items-center">
+                <div class="w-full">
+                  <select
+                    disabled
+                    onchange="setHelpingCategory()"
+                    class="w-full p-2 rounded-lg bg-slate-100 border border-blue-300"
+                    name="calcDrop2"
+                    id="calcDrop2"
+                  >
+                    <option selected disabled value="">
+                      Wybierz z listy...
+                    </option>
+                  </select>
+                </div>
+                <div class="w-auto">
                   <input
-                    id="planDateEnd"
-                    name="planDateEnd"
-                    class="bg-slate-100 p-2 ml-2 rounded-lg border border-blue-300"
-                    type="date"
+                    id="calcInput2"
+                    class="p-2 rounded-lg text-right max-w-24 bg-slate-100 border border-blue-300"
+                    maxlength="5"
+                    oninput="calculateHelpingResult(this)"
+                    autocomplete="off"
+                    disabled
                   />
                 </div>
               </div>
-              <div class="bg-slate-100 rounded-lg">
-                <select
-                  disabled
-                  class="w-full p-2 rounded-lg bg-slate-100 border border-blue-300"
-                  name="planJobType"
-                  id="planJobType"
-                >
-                  <option selected disabled value="">
-                    Wybierz rodzaj robót...
-                  </option>
-                </select>
+              <div class="flex flex-row gap-2 justify-between items-center">
+                <div class="p-2" id="calcResultCategory"></div>
+                <div class="p-2 text-right" id="calcResultValue"></div>
               </div>
-              <div class="flex flex-row gap-2 items-center justify-end p-2">
-                Całkowita ilość dni:
-                <p id="planDaysTotal">0</p>
-                (roboczych:
-                <p id="planDaysWork">0)</p>
+            </form>
+          </section>
+
+          <!-- CHARTS -->
+          <section class="flex flex-row gap-3">
+            <section
+              class="basis-2/3 flex flex-col gap-4 border-2 border-blue-400 rounded-2xl"
+            >
+              <div class="flex flex-row justify-center">
+                <h2 class="py-2">Harmonogram planowy</h2>
               </div>
+              <canvas id="chartJobPlan"></canvas>
+              <hr />
+              <canvas height="300" id="chartEmployeesPlan"></canvas>
+            </section>
+
+            <section
+              class="basis-1/3 w-full flex flex-col gap-4 border-2 border-blue-400 rounded-2xl"
+            >
               <div
-                class="flex flex-row items-center justify-between bg-slate-50 rounded-lg ml-2"
+                class="flex flex-row justify-between items-center min-w-full p-2"
               >
-                Planowana ilość:
-                <input
-                  id="planJobDayQuantity"
-                  name="planJobDayQuantity"
-                  class="text-right p-2 w-max rounded-lg bg-slate-100 border border-blue-300"
-                  value="0"
-                  type="text"
-                  maxlength="5"
-                  oninput="floatInputPattern(this)"
-                  autocomplete="off"
-                />
-              </div>
-              <div class="flex flex-row gap-2 items-center justify-end p-2">
-                Zaplanowano:
-                <p id="planQuantitySum">0</p>
-                /
-                <p id="planQuantityTotal">0</p>
-              </div>
-            </div>
-          </form>
-          <form
-            id="helpingCalcForm"
-            class="basis-1/3 flex flex-col gap-2 px-2 border-2 border-blue-400 rounded-2xl"
-          >
-            <div
-              class="flex flex-row justify-between items-center min-w-full p-2"
-            >
-              <div class="flex w-full justify-center">
-                Kalkulator pomocniczy
-              </div>
-              <svg
-                class="cursor-pointer fill-gray-600"
-                onclick="resetHelpingCalcForm()"
-                xmlns="http://www.w3.org/2000/svg"
-                height="24px"
-                width="24px"
-                viewBox="0 -960 960 960"
-              >
-                <path
-                  d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"
-                />
-              </svg>
-            </div>
-            <div class="flex flex-row gap-2 items-center">
-              <div class="w-full">
-                <select
-                  onchange="onChangeCalcDrop1(this)"
-                  class="w-full p-2 rounded-lg bg-slate-100 border border-blue-300"
-                  name="calcDrop1"
-                  id="calcDrop1"
+                <h2 class="flex w-full justify-center py-2">
+                  Informacje szczególne
+                </h2>
+                <svg
+                  onclick="fillInDetailPlanListForm()"
+                  class="cursor-pointer fill-gray-600"
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="24px"
+                  width="24px"
+                  viewBox="0 -960 960 960"
                 >
-                  <option selected disabled value="">Wybierz z listy...</option>
-                  <option value="Ilość dni">Ilość dni</option>
-                  <option value="Ilość pracowników (dziennie)">
-                    Ilość pracowników (dziennie)
-                  </option>
-                  <option value="Ilość płanowana (dziennie)">
-                    Ilość płanowana (dziennie)
-                  </option>
-                </select>
+                  <path
+                    d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"
+                  />
+                </svg>
               </div>
-              <div class="w-auto">
-                <input
-                  id="calcInput1"
-                  class="p-2 rounded-lg text-right max-w-24 bg-slate-100 border border-blue-300"
-                  maxlength="5"
-                  oninput="calculateHelpingResult(this)"
-                  autocomplete="off"
-                />
-              </div>
-            </div>
-            <div class="flex flex-row justify-between gap-2 items-center">
-              <div class="w-full">
-                <select
-                  disabled
-                  onchange="setHelpingCategory()"
-                  class="w-full p-2 rounded-lg bg-slate-100 border border-blue-300"
-                  name="calcDrop2"
-                  id="calcDrop2"
-                >
-                  <option selected disabled value="">Wybierz z listy...</option>
-                </select>
-              </div>
-              <div class="w-auto">
-                <input
-                  id="calcInput2"
-                  class="p-2 rounded-lg text-right max-w-24 bg-slate-100 border border-blue-300"
-                  maxlength="5"
-                  oninput="calculateHelpingResult(this)"
-                  autocomplete="off"
-                  disabled
-                />
-              </div>
-            </div>
-            <div class="flex flex-row gap-2 justify-between items-center">
-              <div class="p-2" id="calcResultCategory"></div>
-              <div class="p-2 text-right" id="calcResultValue"></div>
-            </div>
-          </form>
-        </section>
-
-        <!-- CHARTS -->
-        <section class="flex flex-row gap-3">
-          <section
-            class="basis-2/3 flex flex-col gap-4 border-2 border-blue-400 rounded-2xl"
-          >
-            <div class="flex flex-row justify-center">
-              <h2 class="py-2">Harmonogram planowy</h2>
-            </div>
-            <canvas id="chartJobPlan"></canvas>
-            <hr />
-            <canvas height="300" id="chartEmployeesPlan"></canvas>
+              <form
+                id="detailPlanListForm"
+                oninput="onchangeDetailPlanListForm()"
+                class="flex flex-col justify-center items-start px-2"
+              ></form>
+            </section>
           </section>
-
-          <section
-            class="basis-1/3 w-full flex flex-col gap-4 border-2 border-blue-400 rounded-2xl"
-          >
-            <div
-              class="flex flex-row justify-between items-center min-w-full p-2"
-            >
-              <h2 class="flex w-full justify-center py-2">
-                Informacje szczególne
-              </h2>
-              <svg
-                onclick="fillInDetailPlanListForm()"
-                class="cursor-pointer fill-gray-600"
-                xmlns="http://www.w3.org/2000/svg"
-                height="24px"
-                width="24px"
-                viewBox="0 -960 960 960"
-              >
-                <path
-                  d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"
-                />
-              </svg>
-            </div>
-            <form
-              id="detailPlanListForm"
-              oninput="onchangeDetailPlanListForm()"
-              class="flex flex-col justify-center items-start px-2"
-            ></form>
-          </section>
-        </section>
-      </div>
+        </div>
+      </section>
     </main>
 
     <script src="main.js"></script>

@@ -376,7 +376,7 @@ function updatePlanDataAndCharts(
 }
 
 function getChartColor(result) {
-  if (result === 0) return 'rgb(75, 192, 192)'
+  if (result === 0) return 'rgb(96, 165, 250)'
   if (result > 0) return 'rgb(239, 68, 68)'
   return 'rgb(184, 197, 214)'
 }
@@ -399,7 +399,7 @@ function createJobPlanChart(ctx) {
           label: 'Plan wykonywania',
           data: [1],
           fill: false,
-          borderColor: 'rgb(75, 192, 192)',
+          borderColor: 'rgb(96, 165, 250)',
           tension: 0.1,
         },
       ],
@@ -450,7 +450,7 @@ function createEmployeesQuantityChart(ctx) {
           label: 'Pracowniki plan',
           data: [0],
           borderRadius: 5,
-          backgroundColor: 'rgb(75, 192, 192)',
+          backgroundColor: 'rgb(96, 165, 250)',
         },
       ],
     },
