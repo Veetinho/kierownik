@@ -8,8 +8,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>Kierownik</title>
   </head>
-  <body class="bg-slate-100">
-    <header class="w-full fixed top-0 z-50 bg-slate-200/80">
+  <body class="bg-slate-200">
+    <header class="w-full max-h-14 fixed top-0 z-50 bg-slate-300/80">
       <div
         class="container mx-auto p-3 w-full flex flex-row items-center gap-2"
       >
@@ -40,16 +40,16 @@
       </div>
     </header>
 
-    <main class="container mx-auto flex flex-row items-start gap-4">
+    <main class="container mx-auto flex flex-row items-start gap-4 pt-4 mt-14">
       <aside
         id="sidebar"
-        class="relative top-0 left-0 z-40 w-64 min-h-screen h-full pt-16 border border-x-2 border-slate-200 border-opacity-30"
+        class="relative top-0 left-0 z-40 w-64 min-h-screen h-full bg-slate-200"
         aria-label="Sidebar"
       >
         <div class="h-full px-3 pb-4">
           <ul class="space-y-2 font-medium">
             <li
-              class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-200 hover:cursor-pointer group"
+              class="flex items-center p-2 text-gray-900 rounded-xl hover:bg-gray-300 hover:cursor-pointer group"
             >
               <svg
                 class="w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900"
@@ -68,7 +68,7 @@
               <span class="ms-3">First element</span>
             </li>
             <li
-              class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-200 hover:cursor-pointer group"
+              class="flex items-center p-2 text-gray-900 rounded-xl hover:bg-gray-300 hover:cursor-pointer group"
             >
               <svg
                 class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900"
@@ -87,8 +87,8 @@
         </div>
       </aside>
 
-      <section class="w-full mt-16 mb-3">
-        <section class="flex flex-row gap-3 py-3">
+      <section class="w-full mb-3">
+        <section class="flex flex-row gap-3 pb-3">
           <form
             id="generalPlanInfoForm"
             class="basis-2/3 border-2 border-blue-400 rounded-2xl px-3 pb-2"
@@ -100,7 +100,7 @@
                 >
                   <div>Informacje ogólne</div>
                   <div
-                    class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-80 p-4 bg-slate-200 text-gray-700 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10"
+                    class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-80 p-4 text-gray-700 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10"
                   >
                     <h3
                       class="flex flex-row justify-center text-md font-semibold mb-2"
@@ -131,7 +131,7 @@
               </div>
               <div class="rounded-lg">
                 <select
-                  class="w-full p-2 rounded-lg bg-slate-100 border border-blue-300"
+                  class="w-full p-2 rounded-lg bg-slate-200 border border-blue-300"
                   name="planObject"
                   id="planObject"
                 >
@@ -146,7 +146,7 @@
                   <input
                     id="planDateStart"
                     name="planDateStart"
-                    class="bg-slate-100 p-2 ml-2 rounded-lg border border-blue-300"
+                    class="bg-slate-200 p-2 ml-2 rounded-lg border border-blue-300"
                     type="date"
                   />
                 </div>
@@ -155,15 +155,15 @@
                   <input
                     id="planDateEnd"
                     name="planDateEnd"
-                    class="bg-slate-100 p-2 ml-2 rounded-lg border border-blue-300"
+                    class="bg-slate-200 p-2 ml-2 rounded-lg border border-blue-300"
                     type="date"
                   />
                 </div>
               </div>
-              <div class="bg-slate-100 rounded-lg">
+              <div>
                 <select
                   disabled
-                  class="w-full p-2 rounded-lg bg-slate-100 border border-blue-300"
+                  class="w-full p-2 rounded-lg bg-slate-200 border border-blue-300"
                   name="planJobType"
                   id="planJobType"
                 >
@@ -179,13 +179,13 @@
                 <p id="planDaysWork">0)</p>
               </div>
               <div
-                class="flex flex-row items-center justify-between bg-slate-50 rounded-lg ml-2"
+                class="flex flex-row items-center justify-between rounded-lg pl-2"
               >
                 Planowana ilość:
                 <input
                   id="planJobDayQuantity"
                   name="planJobDayQuantity"
-                  class="text-right p-2 w-max rounded-lg bg-slate-100 border border-blue-300"
+                  class="text-right p-2 w-max rounded-lg bg-slate-200 border border-blue-300"
                   value="0"
                   type="text"
                   maxlength="5"
@@ -228,7 +228,7 @@
               <div class="w-full">
                 <select
                   onchange="onChangeCalcDrop1(this)"
-                  class="w-full p-2 rounded-lg bg-slate-100 border border-blue-300"
+                  class="w-full p-2 rounded-lg bg-slate-200 border border-blue-300"
                   name="calcDrop1"
                   id="calcDrop1"
                 >
@@ -245,7 +245,7 @@
               <div class="w-auto">
                 <input
                   id="calcInput1"
-                  class="p-2 rounded-lg text-right max-w-24 bg-slate-100 border border-blue-300"
+                  class="p-2 rounded-lg text-right max-w-24 bg-slate-200 border border-blue-300"
                   maxlength="5"
                   oninput="calculateHelpingResult(this)"
                   autocomplete="off"
@@ -257,7 +257,7 @@
                 <select
                   disabled
                   onchange="setHelpingCategory()"
-                  class="w-full p-2 rounded-lg bg-slate-100 border border-blue-300"
+                  class="w-full p-2 rounded-lg bg-slate-200 border border-blue-300"
                   name="calcDrop2"
                   id="calcDrop2"
                 >
@@ -267,7 +267,7 @@
               <div class="w-auto">
                 <input
                   id="calcInput2"
-                  class="p-2 rounded-lg text-right max-w-24 bg-slate-100 border border-blue-300"
+                  class="p-2 rounded-lg text-right max-w-24 bg-slate-200 border border-blue-300"
                   maxlength="5"
                   oninput="calculateHelpingResult(this)"
                   autocomplete="off"

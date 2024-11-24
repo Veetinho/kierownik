@@ -556,22 +556,22 @@ function createDatesRangeFormInnerHtml(dates) {
   const lastIndx = dates.length - 1
   return dates
     .map((v, i) => {
-      const color = v.isWeekend ? '#e2e8f0' : '#f8fafc'
+      const color = v.isWeekend ? '#cbd5e1' : '#e2e8f0'
       const date = new Date(v.date)
       return `<div class="flex flex-row gap-2 w-full items-center justify-start p-1 border-${
         i === lastIndx ? 'y' : 't'
-      }-2 border-blue-100 ${v.isWeekend ? `bg-[${color}]` : ''}">
+      } border-slate-300 ${v.isWeekend ? `bg-[${color}]` : ''}">
       <p class="w-16" data-date="${
         v.date
       }">${date.getDate()} ${getPolishMonthName(date.getMonth())}</p>
       <div class="flex flex-col gap-1 items-center mr-auto">
         <div class="flex flex-row gap-2">
-          <select class="bg-slate-100 py-1 px-2 rounded-md border border-blue-300" required>
+          <select class="bg-slate-200 py-1 px-2 rounded-md border border-blue-400" required>
             <option disabled selected value="">St. brygadzista</option>
             ${foremen.map((v) => `<option value="${v}">${v}</option>`).join('')}
           </select>
           <input
-            class="py-1 px-2 rounded-md text-right w-12 bg-slate-100 border border-blue-300"
+            class="py-1 px-2 rounded-md text-right w-12 bg-slate-200 border border-blue-400"
             type="text"
             maxlength="2"
             oninput="intInputPattern(this)"
@@ -613,12 +613,12 @@ function createNewForemanInputsBlock() {
   const foremen = JSON.parse(localStorage.getItem('foremen'))
   const newDiv = document.createElement('div')
   newDiv.classList.add('flex', 'flex-row', 'gap-2')
-  newDiv.innerHTML = `<select class="bg-slate-100 py-1 px-2 rounded-md border border-blue-300" required>
+  newDiv.innerHTML = `<select class="bg-slate-200 py-1 px-2 rounded-md border border-blue-400" required>
       <option disabled selected value="">St. brygadzista</option>
       ${foremen.map((v) => `<option value="${v}">${v}</option>`).join('')}
     </select>
     <input
-      class="py-1 px-2 rounded-md text-right w-12 bg-slate-100 border border-blue-300"
+      class="py-1 px-2 rounded-md text-right w-12 bg-slate-200 border border-blue-400"
       type="text"
       maxlength="2"
       oninput="intInputPattern(this)"
@@ -646,7 +646,7 @@ function createSubmitFormButton() {
     <button
       type="submit"
       id="submitFormBtn"
-      class="bg-blue-100 py-1 px-3 mt-2 rounded-xl border-2 border-blue-400 hidden"
+      class="bg-blue-200 py-1 px-3 mt-2 rounded-xl border-2 border-blue-400 hidden"
     >Zatwierdź</button>
   </div>`
 }
