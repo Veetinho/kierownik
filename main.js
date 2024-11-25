@@ -1,4 +1,5 @@
 const _ = (id) => document.getElementById(id)
+const sidebar = _('sidebar')
 const chartJobPlan = createJobPlanChart(_('chartJobPlan'))
 const chartEmployeesPlan = createEmployeesQuantityChart(_('chartEmployeesPlan'))
 
@@ -36,6 +37,20 @@ async function fetchData() {
   const json = await data.json()
   return json
 }
+
+sidebar.addEventListener('click', (e) => {
+  const li = e.target.closest('li')
+  const activeDataSection = li.getAttribute('data-section')
+  if (li === null) return
+  const elems = sidebar.querySelectorAll('li')
+  elems.forEach((elem) => {
+    elem.classList.remove('active')
+    const dataSection = elem.getAttribute('data-section')
+    _(dataSection).classList.add('hidden')
+  })
+  li.classList.add('active')
+  _(activeDataSection).classList.remove('hidden')
+})
 
 _('detailPlanListForm').addEventListener('submit', (e) => {
   e.preventDefault()
