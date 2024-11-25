@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 })
 
 function setToLocalStorage(...items) {
+  console.log('local')
   items.forEach((item) => {
     localStorage.setItem(item[0], JSON.stringify(item[1]))
   })
@@ -36,6 +37,11 @@ async function fetchData() {
   )
   const json = await data.json()
   return json
+}
+
+function setNewPlanDataToSheet(data) {
+  console.log(data)
+  return true
 }
 
 sidebar.addEventListener('click', (e) => {
@@ -56,8 +62,11 @@ _('detailPlanListForm').addEventListener('submit', (e) => {
   e.preventDefault()
   const detailPlanListFormData = getDetailPlanListFormData()
   const generalPlanInfoFormData = getGeneralPlanListFormData()
-  console.log(detailPlanListFormData)
-  console.log(generalPlanInfoFormData)
+  const res = setNewPlanDataToSheet({
+    detailPlanListFormData,
+    generalPlanInfoFormData,
+  })
+  console.log(res)
 })
 
 _('planDateStart').addEventListener('change', (e) => {
@@ -90,6 +99,7 @@ _('planObject').addEventListener('input', () => {
   options.unshift(
     '<option selected disabled value="">Wybierz rodzaj robót...</option>'
   )
+  clearPlanObjectExtraInfo()
   updatePlanJobType(options.join(''))
   updatePlanJobDayQuantity()
   updatePlanQuantityTotal()
@@ -104,11 +114,24 @@ _('planJobType').addEventListener('input', () => {
   const projectJob = jobs.filter(
     (v) => v.job === job && v.project === project
   )[0]
+  updatePlanObjectExtraInfo(projectJob)
   updatePlanJobDayQuantity()
   updatePlanQuantityTotal(projectJob?.quantity || 0)
   updatePlanQuantitySum()
   onchangeDetailPlanListForm()
 })
+
+function updatePlanObjectExtraInfo(projectJob) {
+  const planObjectExtraInfo = _('planObjectExtraInfo')
+  planObjectExtraInfo.innerHTML = getPlanObjectExtraInfoHtml(projectJob)
+  planObjectExtraInfo.classList.remove('hidden')
+}
+
+function clearPlanObjectExtraInfo() {
+  const planObjectExtraInfo = _('planObjectExtraInfo')
+  planObjectExtraInfo.innerHTML = ''
+  planObjectExtraInfo.classList.add('hidden')
+}
 
 function getDatesRange() {
   let ds = _('planDateStart').value
@@ -228,6 +251,7 @@ function setProjectDropdownOptions(projects) {
     '<option selected disabled value="">Wybierz obiekt...</option>'
   )
   _('planObject').innerHTML = options.join('')
+  _('planFactObject').innerHTML = options.join('')
 }
 
 function setDaysQuantity(daysBetween) {
@@ -339,11 +363,13 @@ function calculateHelpingResult(e) {
 
 function floatInputPattern(e) {
   if (e.id === 'planJobDayQuantity') onchangeDetailPlanListForm()
-  e.value = e.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')
+  let value = e.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')
+  if (value == '.') value = '0.'
+  e.value = value.startsWith('0') && !value.includes('.') ? value * 1 : value
 }
 
 function intInputPattern(e) {
-  e.value = e.value.replace(/\D/g, '')
+  e.value = e.value.replace(/\D/g, '') * 1
 }
 
 function setHelpingCategory() {
@@ -442,8 +468,7 @@ function updateJobPlanChart(labels, data) {
   chartJobPlan.data.labels = labels.map((v) => {
     const regex = new RegExp(/\d{4}-\d{2}-\d{2}/, 'g')
     if (!regex.test(v.date)) return v.date
-    const date = new Date(v.date)
-    return `${date.getDate()} ${getPolishMonthName(date.getMonth())}`
+    return getDatePolishFormat(v.date)
   })
   chartJobPlan.data.datasets[0].data = data.map((v) => v * coeff)
   chartJobPlan.update()
@@ -486,8 +511,7 @@ function updateEmployeesQuantityChart(labels, data) {
   chartEmployeesPlan.data.labels = labels.map((v) => {
     const regex = new RegExp(/\d{4}-\d{2}-\d{2}/, 'g')
     if (!regex.test(v.date)) return v.date
-    const date = new Date(v.date)
-    return `${date.getDate()} ${getPolishMonthName(date.getMonth())}`
+    return getDatePolishFormat(v.date)
   })
   chartEmployeesPlan.data.datasets[0].data = data
   chartEmployeesPlan.update()
@@ -566,19 +590,23 @@ function getPolishMonthName(num) {
   ][num]
 }
 
+function getDatePolishFormat(date, isYear = false) {
+  const newDate = new Date(date)
+  return `${newDate.getDate()} ${getPolishMonthName(newDate.getMonth())}${
+    isYear === true ? ` ${newDate.getFullYear()}` : ''
+  }`
+}
+
 function createDatesRangeFormInnerHtml(dates) {
   const foremen = JSON.parse(localStorage.getItem('foremen'))
   const lastIndx = dates.length - 1
   return dates
     .map((v, i) => {
       const color = v.isWeekend ? '#cbd5e1' : '#e2e8f0'
-      const date = new Date(v.date)
       return `<div class="flex flex-row gap-2 w-full items-center justify-start p-1 border-${
         i === lastIndx ? 'y' : 't'
       } border-slate-300 ${v.isWeekend ? `bg-[${color}]` : ''}">
-      <p class="w-16" data-date="${
-        v.date
-      }">${date.getDate()} ${getPolishMonthName(date.getMonth())}</p>
+      <p class="w-16" data-date="${v.date}">${getDatePolishFormat(v.date)}</p>
       <div class="flex flex-col gap-1 items-center mr-auto">
         <div class="flex flex-row gap-2">
           <select class="bg-slate-200 py-1 px-2 rounded-md border border-blue-400" required>
@@ -664,4 +692,73 @@ function createSubmitFormButton() {
       class="bg-blue-200 py-1 px-3 mt-2 rounded-xl border-2 border-blue-400 hidden"
     >Zatwierdź</button>
   </div>`
+}
+
+function getPlanObjectExtraInfoHtml(obj) {
+  return `<h3 class="flex justify-center text-md font-semibold mb-2">Informacje dodatkowe</h3>
+    <p class="text-sm">Nazwa projektu: ${obj.project}</p>
+    <p class="text-sm mt-1">Dział: ${obj.department}</p>
+    <p class="text-sm mt-1">Rodzaj robót: ${obj.job}</p>
+    <p class="text-sm mt-1">Planowa data rozpoczęcia robót: ${getDatePolishFormat(
+      obj.dateFrom,
+      true
+    )}</p>
+    <p class="text-sm mt-1">Planowa data zakończenia robót: ${getDatePolishFormat(
+      obj.dateTo,
+      true
+    )}`
+}
+
+/* ================================ PLAN / FACT ================================ */
+
+function resetGeneralPlanFactInfoForm() {
+  _('generalPlanFactInfoForm').reset()
+  clearPlanFactObjectExtraInfo()
+  updatePlanFactJobType(
+    '<option selected disabled value="">Wybierz rodzaj robót...</option>',
+    false
+  )
+}
+
+_('planFactObject').addEventListener('input', () => {
+  const project = _('planFactObject').value
+  const jobs = JSON.parse(localStorage.getItem('factJobsDetail'))
+  const allJobs = jobs
+    .filter((v) => v.project === project)
+    .map((v) => v.zadania)
+  const uniqueJobs = Array.from(new Set(allJobs))
+  const options = uniqueJobs.map((v) => `<option value="${v}">${v}</option>`)
+  options.unshift(
+    '<option selected disabled value="">Wybierz rodzaj robót...</option>'
+  )
+  updatePlanFactJobType(options.join(''))
+})
+
+_('planFactJobType').addEventListener('input', () => {
+  const project = _('planFactObject').value
+  const job = _('planFactJobType').value
+  const jobs = JSON.parse(localStorage.getItem('planJobsGeneral'))
+  const projectJob = jobs.filter(
+    (v) => v.job === job && v.project === project
+  )[0]
+  updatePlanFactObjectExtraInfo(projectJob)
+})
+
+function updatePlanFactJobType(innerHtml, removeDisabled = true) {
+  _('planFactJobType').innerHTML = innerHtml
+  removeDisabled === true
+    ? _('planFactJobType').removeAttribute('disabled')
+    : _('planFactJobType').setAttribute('disabled', true)
+}
+
+function updatePlanFactObjectExtraInfo(projectJob) {
+  const planFactObjectExtraInfo = _('planFactObjectExtraInfo')
+  planFactObjectExtraInfo.innerHTML = getPlanObjectExtraInfoHtml(projectJob)
+  planFactObjectExtraInfo.classList.remove('hidden')
+}
+
+function clearPlanFactObjectExtraInfo() {
+  const planFactObjectExtraInfo = _('planFactObjectExtraInfo')
+  planFactObjectExtraInfo.innerHTML = ''
+  planFactObjectExtraInfo.classList.add('hidden')
 }
