@@ -42,7 +42,9 @@
       </div>
     </header>
 
-    <main class="container mx-auto flex flex-row items-start gap-4 pt-4 mt-14">
+    <main
+      class="container mx-auto flex flex-row items-start gap-4 pt-4 pr-3 mt-14"
+    >
       <aside
         id="sidebar"
         class="relative top-0 left-0 z-40 w-64 h-full bg-slate-200"
@@ -86,7 +88,7 @@
         </div>
       </aside>
 
-      <section id="planning" class="w-full mb-3">
+      <section id="planning" class="w-full mb-3 hidden">
         <section class="flex flex-row gap-3 pb-3">
           <form
             id="generalPlanInfoForm"
@@ -325,7 +327,7 @@
       </section>
 
       <!-- PLANFACT -->
-      <section id="planFact" class="w-full mb-3 flex flex-col gap-3 hidden">
+      <section id="planFact" class="w-full mb-3 flex flex-col gap-3">
         <form
           id="generalPlanFactInfoForm"
           class="border-2 border-blue-400 rounded-2xl px-3 pb-2"
@@ -396,9 +398,11 @@
           class="basis-2/3 flex flex-col gap-4 border-2 border-blue-400 rounded-2xl"
         >
           <div class="flex flex-row justify-center">
-            <h2 class="py-2">Harmonogram plan / fakt</h2>
+            <h2 class="py-2">Harmonogram plan/fakt</h2>
           </div>
-          <canvas id="chartJobPlanFact"></canvas>
+          <canvas height="400" id="chartJobPlanFact"></canvas>
+          <hr />
+          <canvas height="400" id="chartEmployeesPlanFact"></canvas>
         </section>
       </section>
     </main>

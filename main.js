@@ -1,7 +1,25 @@
 const _ = (id) => document.getElementById(id)
 const sidebar = _('sidebar')
-const chartJobPlan = createJobPlanChart(_('chartJobPlan'))
-const chartEmployeesPlan = createEmployeesQuantityChart(_('chartEmployeesPlan'))
+const chartJobPlan = createJobPlanChart(
+  _('chartJobPlan'),
+  ['Plan'],
+  'Plan wykonywania'
+)
+const chartJobPlanFact = createJobPlanChart(
+  _('chartJobPlanFact'),
+  ['Plan/Fakt'],
+  'Plan/fakt wykonywania'
+)
+const chartEmployeesPlan = createEmployeesQuantityChart(
+  _('chartEmployeesPlan'),
+  ['Ilość'],
+  'Pracowniki plan'
+)
+const chartEmployeesPlanFact = createEmployeesQuantityChart(
+  _('chartEmployeesPlanFact'),
+  ['Ilość'],
+  'Pracowniki plan/fakt'
+)
 
 document.addEventListener('DOMContentLoaded', async () => {
   setPlanDatesRange()
@@ -11,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   //   foremen,
   //   projects,
   //   factJobsDetail,
-  //   factJobsGeneral,
+  //   planJobsDetail,
   //   planJobsGeneral,
   // } = await fetchData()
   // setToLocalStorage(
@@ -19,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   //   ['foremen', foremen],
   //   ['projects', projects],
   //   ['factJobsDetail', factJobsDetail],
-  //   ['factJobsGeneral', factJobsGeneral],
+  //   ['planJobsDetail', planJobsDetail],
   //   ['planJobsGeneral', planJobsGeneral]
   // )
 })
@@ -430,14 +448,14 @@ function getComparePlanSumAndTotal() {
   return sum < min ? -1 : sum > max ? 1 : 0
 }
 
-function createJobPlanChart(ctx) {
+function createJobPlanChart(ctx, labels, label) {
   return new Chart(ctx, {
     type: 'line',
     data: {
-      labels: ['Plan'],
+      labels: labels,
       datasets: [
         {
-          label: 'Plan wykonywania',
+          label: label,
           data: [1],
           fill: false,
           borderColor: 'rgb(96, 165, 250)',
@@ -461,10 +479,7 @@ function createJobPlanChart(ctx) {
 
 function updateJobPlanChart(labels, data) {
   const coeff = parseFloat(_('planJobDayQuantity').value) || 0
-  data.reduce((acc, el, i, arr) => {
-    arr[i] = Number(acc) + Number(el)
-    return arr[i]
-  }, 0)
+  getArrayGrowthDataForChart(data)
   chartJobPlan.data.labels = labels.map((v) => {
     const regex = new RegExp(/\d{4}-\d{2}-\d{2}/, 'g')
     if (!regex.test(v.date)) return v.date
@@ -474,20 +489,27 @@ function updateJobPlanChart(labels, data) {
   chartJobPlan.update()
 }
 
+function getArrayGrowthDataForChart(data) {
+  return data.reduce((acc, el, i, arr) => {
+    arr[i] = Number(acc) + Number(el)
+    return arr[i]
+  }, 0)
+}
+
 function updateJobPlanChartColor(color) {
   chartJobPlan.data.datasets[0].borderColor = color
   chartJobPlan.update()
 }
 
-function createEmployeesQuantityChart(ctx) {
+function createEmployeesQuantityChart(ctx, labels, label) {
   return new Chart(ctx, {
     type: 'line',
     data: {
-      labels: ['Ilość'],
+      labels: labels,
       datasets: [
         {
           type: 'bar',
-          label: 'Pracowniki plan',
+          label: label,
           data: [0],
           borderRadius: 5,
           backgroundColor: 'rgb(96, 165, 250)',
@@ -718,6 +740,7 @@ function resetGeneralPlanFactInfoForm() {
     '<option selected disabled value="">Wybierz rodzaj robót...</option>',
     false
   )
+  updateJobPlanFactChart()
 }
 
 _('planFactObject').addEventListener('input', () => {
@@ -761,4 +784,48 @@ function clearPlanFactObjectExtraInfo() {
   const planFactObjectExtraInfo = _('planFactObjectExtraInfo')
   planFactObjectExtraInfo.innerHTML = ''
   planFactObjectExtraInfo.classList.add('hidden')
+}
+
+function getPlanFactDataToUpdateCharts() {
+  const project = _('planFactObject').value
+  const jobType = _('planFactJobType').value
+  const factJobsDetail = JSON.parse(localStorage.getItem('factJobsDetail'))
+  const planJobsDetail = JSON.parse(localStorage.getItem('planJobsDetail'))
+
+  const factJobsDetailFiltered = factJobsDetail.filter(
+    (v) => v.project === project && v.zadania === jobType
+  )
+  const datesFact = getMinAndMaxValue(factJobsDetailFiltered, 'tydzien')
+
+  const planJobsDetailFiltered = planJobsDetail.filter(
+    (v) => v.project === project && v.job === jobType
+  )
+  const datesPlan = getMinAndMaxValue(planJobsDetailFiltered, 'date')
+}
+
+function getMinAndMaxValue(arr, field) {
+  const newArr = arr.map((v) => new Date(v[field]).getTime())
+  return [Math.min(...newArr), Math.max(...newArr)]
+}
+
+function getArrayOfDates(dateFromAsTime, dateToAsTime) {
+  const arr = []
+  if (dateFromAsTime > dateToAsTime) return arr
+  while (dateToAsTime <= dateFromAsTime) {
+    arr.push(dateFromAsTime)
+    dateFromAsTime += 86_400_000
+  }
+  return arr
+}
+
+function updateJobPlanFactChart(
+  labels = [new Date()],
+  dataPlan = [],
+  dataFact = []
+) {
+  getArrayGrowthDataForChart(dataPlan)
+  getArrayGrowthDataForChart(dataFact)
+  chartJobPlanFact.data.labels = labels.map((v) => getDatePolishFormat(v))
+  chartJobPlanFact.data.datasets[0].data = dataPlan.map((v) => v)
+  chartJobPlanFact.update()
 }
