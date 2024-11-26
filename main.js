@@ -741,6 +741,7 @@ function resetGeneralPlanFactInfoForm() {
     false
   )
   updateJobPlanFactChart()
+  updatePlanFactQuantityTotal()
 }
 
 _('planFactObject').addEventListener('input', () => {
@@ -755,6 +756,8 @@ _('planFactObject').addEventListener('input', () => {
     '<option selected disabled value="">Wybierz rodzaj robót...</option>'
   )
   updatePlanFactJobType(options.join(''))
+  updateJobPlanFactChart()
+  updatePlanFactQuantityTotal()
 })
 
 _('planFactJobType').addEventListener('input', () => {
@@ -765,6 +768,11 @@ _('planFactJobType').addEventListener('input', () => {
     (v) => v.job === job && v.project === project
   )[0]
   updatePlanFactObjectExtraInfo(projectJob)
+  getPlanFactDataToUpdateCharts()
+  updatePlanFactQuantityTotal(
+    projectJob?.quantity || 0,
+    projectJob?.unit || null
+  )
 })
 
 function updatePlanFactJobType(innerHtml, removeDisabled = true) {
@@ -772,6 +780,13 @@ function updatePlanFactJobType(innerHtml, removeDisabled = true) {
   removeDisabled === true
     ? _('planFactJobType').removeAttribute('disabled')
     : _('planFactJobType').setAttribute('disabled', true)
+}
+
+function updatePlanFactQuantityTotal(value = 0, unit = null) {
+  const numberFormat = new Intl.NumberFormat('pl-PL')
+  _('planFactQuantityTotal').textContent = `${numberFormat.format(value)}${
+    unit === null ? '' : ` ${unit}`
+  }`
 }
 
 function updatePlanFactObjectExtraInfo(projectJob) {
@@ -795,15 +810,45 @@ function getPlanFactDataToUpdateCharts() {
   const factJobsDetailFiltered = factJobsDetail.filter(
     (v) => v.project === project && v.zadania === jobType
   )
-  const datesFact = getMinAndMaxValue(factJobsDetailFiltered, 'tydzien')
+  const datesFact = getMinAndMaxDateValue(factJobsDetailFiltered, 'tydzien')
+  const factJobsDetailMap = new Map()
+  factJobsDetailFiltered.forEach((v) =>
+    factJobsDetailMap.set(getDatePolishFormat(v.tydzien, true), v.ilosc)
+  )
 
   const planJobsDetailFiltered = planJobsDetail.filter(
     (v) => v.project === project && v.job === jobType
   )
-  const datesPlan = getMinAndMaxValue(planJobsDetailFiltered, 'date')
+  const datesPlan = getMinAndMaxDateValue(planJobsDetailFiltered, 'date')
+  const planJobsDetailMap = new Map()
+  planJobsDetailFiltered.forEach((v) =>
+    planJobsDetailMap.set(
+      getDatePolishFormat(v.date, true),
+      parseInt(v.quantity * v.resources * 6)
+    )
+  )
+
+  const arrayOfDates = getArrayOfDates(
+    Math.min(...datesFact, ...datesPlan),
+    Math.max(...datesFact, ...datesPlan)
+  )
+
+  const factJobQuantity = arrayOfDates
+    .filter((v) => v < Date.now())
+    .map((v) => factJobsDetailMap.get(getDatePolishFormat(v, true)) || 0)
+  const planJobQuantity = arrayOfDates.map(
+    (v) => planJobsDetailMap.get(getDatePolishFormat(v, true)) || 0
+  )
+
+  updateJobPlanFactChart(arrayOfDates, planJobQuantity, factJobQuantity)
+
+  console.log('arrayOfDates', arrayOfDates)
+  console.log('planJobQuantity', planJobQuantity)
+  console.log('factJobQuantity', factJobQuantity)
 }
 
-function getMinAndMaxValue(arr, field) {
+function getMinAndMaxDateValue(arr, field) {
+  if (arr.length === 0) return []
   const newArr = arr.map((v) => new Date(v[field]).getTime())
   return [Math.min(...newArr), Math.max(...newArr)]
 }
@@ -811,9 +856,9 @@ function getMinAndMaxValue(arr, field) {
 function getArrayOfDates(dateFromAsTime, dateToAsTime) {
   const arr = []
   if (dateFromAsTime > dateToAsTime) return arr
-  while (dateToAsTime <= dateFromAsTime) {
+  while (dateToAsTime >= dateFromAsTime) {
     arr.push(dateFromAsTime)
-    dateFromAsTime += 86_400_000
+    dateFromAsTime += 86400000
   }
   return arr
 }
@@ -826,6 +871,21 @@ function updateJobPlanFactChart(
   getArrayGrowthDataForChart(dataPlan)
   getArrayGrowthDataForChart(dataFact)
   chartJobPlanFact.data.labels = labels.map((v) => getDatePolishFormat(v))
-  chartJobPlanFact.data.datasets[0].data = dataPlan.map((v) => v)
+  chartJobPlanFact.data.datasets = [
+    {
+      label: 'Plan',
+      data: dataPlan,
+      fill: true,
+      borderColor: 'rgb(148, 163, 184)',
+      tension: 0.1,
+    },
+    {
+      label: 'Fakt',
+      data: dataFact,
+      fill: false,
+      borderColor: 'rgb(96, 165, 250)',
+      tension: 0.1,
+    },
+  ]
   chartJobPlanFact.update()
 }
