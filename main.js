@@ -339,6 +339,7 @@ function resetGeneralPlanInfoForm() {
   _('planJobType').setAttribute('disabled', true)
   _('planQuantityTotal').textContent = 0
   onchangeDetailPlanListForm()
+  clearPlanObjectExtraInfo()
 }
 
 function onChangeCalcDrop1(e) {
@@ -747,9 +748,7 @@ function resetGeneralPlanFactInfoForm() {
 _('planFactObject').addEventListener('input', () => {
   const project = _('planFactObject').value
   const jobs = JSON.parse(localStorage.getItem('factJobsDetail'))
-  const allJobs = jobs
-    .filter((v) => v.project === project)
-    .map((v) => v.zadania)
+  const allJobs = jobs.filter((v) => v.project === project).map((v) => v.job)
   const uniqueJobs = Array.from(new Set(allJobs))
   const options = uniqueJobs.map((v) => `<option value="${v}">${v}</option>`)
   options.unshift(
@@ -808,12 +807,12 @@ function getPlanFactDataToUpdateCharts() {
   const planJobsDetail = JSON.parse(localStorage.getItem('planJobsDetail'))
 
   const factJobsDetailFiltered = factJobsDetail.filter(
-    (v) => v.project === project && v.zadania === jobType
+    (v) => v.project === project && v.job === jobType
   )
-  const datesFact = getMinAndMaxDateValue(factJobsDetailFiltered, 'tydzien')
+  const datesFact = getMinAndMaxDateValue(factJobsDetailFiltered, 'date')
   const factJobsDetailMap = new Map()
   factJobsDetailFiltered.forEach((v) =>
-    factJobsDetailMap.set(getDatePolishFormat(v.tydzien, true), v.ilosc)
+    factJobsDetailMap.set(getDatePolishFormat(v.date, true), v.quantity)
   )
 
   const planJobsDetailFiltered = planJobsDetail.filter(
