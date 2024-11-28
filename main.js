@@ -839,11 +839,33 @@ function getPlanFactDataToUpdateCharts() {
     (v) => planJobsDetailMap.get(getDatePolishFormat(v, true)) || 0
   )
 
-  updateJobPlanFactChart(arrayOfDates, planJobQuantity, factJobQuantity)
+  let predictJobQuantity = null
+  if (planJobQuantity.length !== factJobQuantity.length)
+    predictJobQuantity = getPredictJobQuantity(planJobQuantity, factJobQuantity)
+
+  updateJobPlanFactChart(
+    arrayOfDates,
+    planJobQuantity,
+    factJobQuantity,
+    predictJobQuantity
+  )
 
   console.log('arrayOfDates', arrayOfDates)
   console.log('planJobQuantity', planJobQuantity)
   console.log('factJobQuantity', factJobQuantity)
+  // console.log('predictJobQuantity', predictJobQuantity)
+}
+
+function getPredictJobQuantity(planJobQuantity, factJobQuantity) {
+  const maxFactValue = factJobQuantity.reduce((acc, v) => acc + v, 0)
+  if (maxFactValue === 0) return null
+  let firstWorkDayIndex = factJobQuantity.findIndex((v) => v > 0)
+  if (firstWorkDayIndex > 0) firstWorkDayIndex--
+  const lastWorkDayIndex = factJobQuantity.findLastIndex((v) => v > 0)
+  const dailyEfficiency = parseFloat(
+    maxFactValue / (lastWorkDayIndex - firstWorkDayIndex)
+  )
+  return dailyEfficiency
 }
 
 function getMinAndMaxDateValue(arr, field) {
@@ -872,18 +894,32 @@ function updateJobPlanFactChart(
   chartJobPlanFact.data.labels = labels.map((v) => getDatePolishFormat(v))
   chartJobPlanFact.data.datasets = [
     {
-      label: 'Plan',
-      data: dataPlan,
-      fill: true,
-      borderColor: 'rgb(148, 163, 184)',
-      tension: 0.1,
-    },
-    {
       label: 'Fakt',
       data: dataFact,
       fill: false,
       borderColor: 'rgb(96, 165, 250)',
+      pointStyle: false,
       tension: 0.1,
+      lineTension: 0.8,
+    },
+    {
+      label: 'Predict',
+      data: [, , , , , , , , , , , , , , , , , 30, 35, 40, 45, 50, 55, 60],
+      fill: false,
+      borderColor: 'rgb(96, 165, 250)',
+      borderDash: [5, 5],
+      pointStyle: false,
+      tension: 0.1,
+    },
+    {
+      label: 'Plan',
+      data: dataPlan,
+      borderColor: '#94a3b8',
+      backgroundColor: 'rgb(203, 213, 225, 0.5)',
+      fill: true,
+      pointStyle: false,
+      tension: 0.1,
+      lineTension: 0.8,
     },
   ]
   chartJobPlanFact.update()
