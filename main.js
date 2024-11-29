@@ -23,7 +23,6 @@ const chartEmployeesPlanFact = createEmployeesQuantityChart(
 
 document.addEventListener('DOMContentLoaded', async () => {
   setPlanDatesRange()
-  setProjectDropdownOptions(JSON.parse(localStorage.getItem('projects')))
   // const {
   //   jobs,
   //   foremen,
@@ -40,6 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   //   ['planJobsDetail', planJobsDetail],
   //   ['planJobsGeneral', planJobsGeneral]
   // )
+  setProjectDropdownOptions(JSON.parse(localStorage.getItem('projects')))
 })
 
 function setToLocalStorage(...items) {
