@@ -823,7 +823,7 @@ function getPlanFactDataToUpdateCharts() {
   planJobsDetailFiltered.forEach((v) =>
     planJobsDetailMap.set(
       getDatePolishFormat(v.date, true),
-      parseInt(v.quantity * v.resources * 6)
+      parseFloat(v.quantity * v.resources * 6)
     )
   )
 
@@ -840,7 +840,7 @@ function getPlanFactDataToUpdateCharts() {
   )
 
   let predictJobQuantity = null
-  if (planJobQuantity.length !== factJobQuantity.length)
+  if (planJobQuantity.length - factJobQuantity.length > 2)
     predictJobQuantity = getPredictJobQuantity(planJobQuantity, factJobQuantity)
 
   updateJobPlanFactChart(
@@ -849,23 +849,27 @@ function getPlanFactDataToUpdateCharts() {
     factJobQuantity,
     predictJobQuantity
   )
-
-  console.log('arrayOfDates', arrayOfDates)
-  console.log('planJobQuantity', planJobQuantity)
-  console.log('factJobQuantity', factJobQuantity)
-  // console.log('predictJobQuantity', predictJobQuantity)
 }
 
 function getPredictJobQuantity(planJobQuantity, factJobQuantity) {
-  const maxFactValue = factJobQuantity.reduce((acc, v) => acc + v, 0)
+  const maxPlanValue = planJobQuantity.reduce((acc, v) => acc + v, 0)
+  let maxFactValue = factJobQuantity.reduce((acc, v) => acc + v, 0)
   if (maxFactValue === 0) return null
   let firstWorkDayIndex = factJobQuantity.findIndex((v) => v > 0)
   if (firstWorkDayIndex > 0) firstWorkDayIndex--
-  const lastWorkDayIndex = factJobQuantity.findLastIndex((v) => v > 0)
+  const lastWorkDayIndex = factJobQuantity.length - 1
+  if (lastWorkDayIndex - firstWorkDayIndex < 4) return null
   const dailyEfficiency = parseFloat(
     maxFactValue / (lastWorkDayIndex - firstWorkDayIndex)
   )
-  return dailyEfficiency
+  const predictArr = new Array(planJobQuantity.length).fill(NaN)
+  for (let i = lastWorkDayIndex; i < predictArr.length; i++) {
+    if (Math.round(maxFactValue) === Math.round(maxPlanValue)) break
+    maxFactValue += dailyEfficiency
+    if (maxFactValue > maxPlanValue) maxFactValue = maxPlanValue
+    predictArr[i] = Math.round(maxFactValue)
+  }
+  return predictArr
 }
 
 function getMinAndMaxDateValue(arr, field) {
@@ -881,13 +885,20 @@ function getArrayOfDates(dateFromAsTime, dateToAsTime) {
     arr.push(dateFromAsTime)
     dateFromAsTime += 86400000
   }
+  let i = 0
+  while (i < 7) {
+    arr.push(dateFromAsTime)
+    dateFromAsTime += 86400000
+    i++
+  }
   return arr
 }
 
 function updateJobPlanFactChart(
   labels = [new Date()],
   dataPlan = [],
-  dataFact = []
+  dataFact = [],
+  dataPredict = null
 ) {
   getArrayGrowthDataForChart(dataPlan)
   getArrayGrowthDataForChart(dataFact)
@@ -899,28 +910,30 @@ function updateJobPlanFactChart(
       fill: false,
       borderColor: 'rgb(96, 165, 250)',
       pointStyle: false,
-      tension: 0.1,
-      lineTension: 0.8,
-    },
-    {
-      label: 'Predict',
-      data: [, , , , , , , , , , , , , , , , , 30, 35, 40, 45, 50, 55, 60],
-      fill: false,
-      borderColor: 'rgb(96, 165, 250)',
-      borderDash: [5, 5],
-      pointStyle: false,
-      tension: 0.1,
+      tension: 0.9,
+      cubicInterpolationMode: 'monotone',
     },
     {
       label: 'Plan',
-      data: dataPlan,
+      data: dataPlan.map((v) => Math.round(v)),
       borderColor: '#94a3b8',
       backgroundColor: 'rgb(203, 213, 225, 0.5)',
       fill: true,
       pointStyle: false,
-      tension: 0.1,
-      lineTension: 0.8,
+      tension: 0.9,
+      cubicInterpolationMode: 'monotone',
     },
   ]
+  if (dataPredict !== null) {
+    chartJobPlanFact.data.datasets.splice(1, 0, {
+      label: 'Prognoza',
+      data: dataPredict,
+      fill: false,
+      borderColor: 'rgb(96, 165, 250)',
+      borderDash: [5, 5],
+      pointStyle: false,
+      tension: 0.9,
+    })
+  }
   chartJobPlanFact.update()
 }
