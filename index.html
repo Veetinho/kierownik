@@ -105,17 +105,21 @@
       </aside>
 
       <!-- INITIAL PLANNING -->
-      <section id="initialPlanning" class="w-full mb-3 flex flex-col gap-3">
+      <section
+        id="initialPlanning"
+        class="section-slider w-full mb-3 flex flex-col gap-3"
+      >
         <div class="w-full p-2 border-2 border-blue-400 rounded-2xl">
           <!-- Collapsible Section -->
-          <div x-data="{ open: null }" class="space-y-2">
+          <div x-data="{ open: null }" class="space-y-3">
             <!-- Blocks -->
+            <p class="p-3">Pobieranie danych...</p>
           </div>
         </div>
       </section>
 
       <!-- PLANNING -->
-      <section id="planning" class="w-full mb-3 hidden">
+      <section id="planning" class="w-full mb-3 section-slider hidden">
         <section class="flex flex-row gap-3 pb-3">
           <form
             id="generalPlanInfoForm"
@@ -354,7 +358,10 @@
       </section>
 
       <!-- PLANFACT -->
-      <section id="planFact" class="w-full mb-3 flex flex-col gap-3 hidden">
+      <section
+        id="planFact"
+        class="w-full mb-3 section-slider flex flex-col gap-3 hidden"
+      >
         <form
           id="generalPlanFactInfoForm"
           class="border-2 border-blue-400 rounded-2xl px-3 pb-2"
