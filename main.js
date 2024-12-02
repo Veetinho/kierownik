@@ -939,7 +939,7 @@ function updateJobPlanFactChart(
   chartJobPlanFact.update()
 }
 
-//
+/* ================================ INITIAL PLANNING ================================ */
 
 function getInitialPlanningBlockHtml() {
   const projectsInfo = JSON.parse(localStorage.getItem('projects'))
