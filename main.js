@@ -24,22 +24,22 @@ const chartEmployeesPlanFact = createEmployeesQuantityChart(
 document.addEventListener('DOMContentLoaded', async () => {
   getInitialPlanningBlockHtml()
   setPlanDatesRange()
-  const {
-    jobs,
-    foremen,
-    projects,
-    factJobsDetail,
-    planJobsDetail,
-    planJobsGeneral,
-  } = await fetchData()
-  setToLocalStorage(
-    ['jobs', jobs],
-    ['foremen', foremen],
-    ['projects', projects],
-    ['factJobsDetail', factJobsDetail],
-    ['planJobsDetail', planJobsDetail],
-    ['planJobsGeneral', planJobsGeneral]
-  )
+  // const {
+  //   jobs,
+  //   foremen,
+  //   projects,
+  //   factJobsDetail,
+  //   planJobsDetail,
+  //   planJobsGeneral,
+  // } = await fetchData()
+  // setToLocalStorage(
+  //   ['jobs', jobs],
+  //   ['foremen', foremen],
+  //   ['projects', projects],
+  //   ['factJobsDetail', factJobsDetail],
+  //   ['planJobsDetail', planJobsDetail],
+  //   ['planJobsGeneral', planJobsGeneral]
+  // )
   setProjectDropdownOptions(JSON.parse(localStorage.getItem('projects')))
 })
 
@@ -749,8 +749,10 @@ function resetGeneralPlanFactInfoForm() {
 _('planFactObject').addEventListener('input', () => {
   const project = _('planFactObject').value
   const jobs = JSON.parse(localStorage.getItem('factJobsDetail'))
+  const plans = JSON.parse(localStorage.getItem('planJobsDetail'))
   const allJobs = jobs.filter((v) => v.project === project).map((v) => v.job)
-  const uniqueJobs = Array.from(new Set(allJobs))
+  const allPlans = plans.filter((v) => v.project === project).map((v) => v.job)
+  const uniqueJobs = Array.from(new Set([...allJobs, ...allPlans]))
   const options = uniqueJobs.map((v) => `<option value="${v}">${v}</option>`)
   options.unshift(
     '<option selected disabled value="">Wybierz rodzaj robót...</option>'
