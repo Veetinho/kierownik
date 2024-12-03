@@ -15,10 +15,8 @@ const chartEmployeesPlan = createEmployeesQuantityChart(
   ['Ilość'],
   'Pracowniki plan'
 )
-const chartEmployeesPlanFact = createEmployeesQuantityChart(
-  _('chartEmployeesPlanFact'),
-  ['Ilość'],
-  'Pracowniki plan/fakt'
+const chartEmployeesPlanFact = createEmployeesPlanFactChart(
+  _('chartEmployeesPlanFact')
 )
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -65,8 +63,8 @@ function setNewPlanDataToSheet(data) {
 
 sidebar.addEventListener('click', (e) => {
   const li = e.target.closest('li')
-  const activeDataSection = li.getAttribute('data-section')
   if (li === null) return
+  const activeDataSection = li.getAttribute('data-section')
   const elems = sidebar.querySelectorAll('li')
   elems.forEach((elem) => {
     elem.classList.remove('active')
@@ -743,6 +741,7 @@ function resetGeneralPlanFactInfoForm() {
     false
   )
   updateJobPlanFactChart()
+  updateEmployeesPlanFactChart()
   updatePlanFactQuantityTotal()
 }
 
@@ -759,6 +758,7 @@ _('planFactObject').addEventListener('input', () => {
   )
   updatePlanFactJobType(options.join(''))
   updateJobPlanFactChart()
+  updateEmployeesPlanFactChart()
   updatePlanFactQuantityTotal()
 })
 
@@ -770,10 +770,11 @@ _('planFactJobType').addEventListener('input', () => {
     (v) => v.job === job && v.project === project
   )[0]
   updatePlanFactObjectExtraInfo(projectJob)
-  getPlanFactDataToUpdateCharts()
+  const factJobQuantity = getPlanFactDataToUpdateCharts()
   updatePlanFactQuantityTotal(
     projectJob?.quantity || 0,
-    projectJob?.unit || null
+    projectJob?.unit || null,
+    factJobQuantity
   )
 })
 
@@ -784,11 +785,13 @@ function updatePlanFactJobType(innerHtml, removeDisabled = true) {
     : _('planFactJobType').setAttribute('disabled', true)
 }
 
-function updatePlanFactQuantityTotal(value = 0, unit = null) {
+function updatePlanFactQuantityTotal(total = 0, unit = null, fact = 0) {
   const numberFormat = new Intl.NumberFormat('pl-PL')
-  _('planFactQuantityTotal').textContent = `${numberFormat.format(value)}${
-    unit === null ? '' : ` ${unit}`
-  }`
+  const totalFormatted = numberFormat.format(total)
+  const factFormatted = numberFormat.format(fact)
+  const valueToDisplay =
+    unit === null ? 0 : `${factFormatted} / ${totalFormatted} ${unit}`
+  _('planFactQuantityTotal').textContent = valueToDisplay
 }
 
 function updatePlanFactObjectExtraInfo(projectJob) {
@@ -814,21 +817,25 @@ function getPlanFactDataToUpdateCharts() {
   )
   const datesFact = getMinAndMaxDateValue(factJobsDetailFiltered, 'date')
   const factJobsDetailMap = new Map()
-  factJobsDetailFiltered.forEach((v) =>
+  const factEmployeesMap = new Map()
+  factJobsDetailFiltered.forEach((v) => {
     factJobsDetailMap.set(getDatePolishFormat(v.date, true), v.quantity)
-  )
+    factEmployeesMap.set(getDatePolishFormat(v.date, true), v.employees || 0)
+  })
 
   const planJobsDetailFiltered = planJobsDetail.filter(
     (v) => v.project === project && v.job === jobType
   )
   const datesPlan = getMinAndMaxDateValue(planJobsDetailFiltered, 'date')
   const planJobsDetailMap = new Map()
-  planJobsDetailFiltered.forEach((v) =>
+  const planEmployeesMap = new Map()
+  planJobsDetailFiltered.forEach((v) => {
     planJobsDetailMap.set(
       getDatePolishFormat(v.date, true),
       parseFloat(v.quantity * v.resources * 6)
     )
-  )
+    planEmployeesMap.set(getDatePolishFormat(v.date, true), v.resources)
+  })
 
   const arrayOfDates = getArrayOfDates(
     Math.min(...datesFact, ...datesPlan),
@@ -838,8 +845,15 @@ function getPlanFactDataToUpdateCharts() {
   const factJobQuantity = arrayOfDates
     .filter((v) => v < Date.now())
     .map((v) => factJobsDetailMap.get(getDatePolishFormat(v, true)) || 0)
+  const factEmployeesQuantity = arrayOfDates
+    .filter((v) => v < Date.now())
+    .map((v) => factEmployeesMap.get(getDatePolishFormat(v, true)) || 0)
+
   const planJobQuantity = arrayOfDates.map(
     (v) => planJobsDetailMap.get(getDatePolishFormat(v, true)) || 0
+  )
+  const planEmployeesQuantity = arrayOfDates.map(
+    (v) => planEmployeesMap.get(getDatePolishFormat(v, true)) || 0
   )
 
   let predictJobQuantity = null
@@ -852,6 +866,14 @@ function getPlanFactDataToUpdateCharts() {
     factJobQuantity,
     predictJobQuantity
   )
+
+  updateEmployeesPlanFactChart(
+    arrayOfDates,
+    planEmployeesQuantity,
+    factEmployeesQuantity
+  )
+
+  return factJobQuantity[factJobQuantity.length - 1]
 }
 
 function getPredictJobQuantity(planJobQuantity, factJobQuantity) {
@@ -895,6 +917,54 @@ function getArrayOfDates(dateFromAsTime, dateToAsTime) {
     i++
   }
   return arr
+}
+
+function createEmployeesPlanFactChart(ctx) {
+  return new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: [],
+      datasets: [
+        {
+          label: 'Plan',
+          data: [],
+          backgroundColor: '#94a3b8',
+          borderColor: '#94a3b8',
+          borderWidth: 1,
+        },
+        {
+          label: 'Fakt',
+          data: [],
+          backgroundColor: 'rgb(96, 165, 250, 0.5)',
+          borderColor: 'rgb(96, 165, 250)',
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      // scales: {
+      //   x: {
+      //     stacked: true,
+      //   },
+      //   y: {
+      //     beginAtZero: true,
+      //     stacked: true,
+      //   },
+      // },
+    },
+  })
+}
+
+function updateEmployeesPlanFactChart(
+  labels = [new Date()],
+  planData = [],
+  factData = []
+) {
+  chartEmployeesPlanFact.data.labels = labels.map((v) => getDatePolishFormat(v))
+  chartEmployeesPlanFact.data.datasets[0].data = planData
+  chartEmployeesPlanFact.data.datasets[1].data = factData
+  chartEmployeesPlanFact.update()
 }
 
 function updateJobPlanFactChart(
