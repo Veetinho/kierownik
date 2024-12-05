@@ -707,12 +707,23 @@ function createNewForemanInputsBlock() {
 }
 
 function createSubmitFormButton() {
-  return `<div class="flex flex-row min-w-full justify-end mb-2">
+  return `<div class="w-full flex justify-end">
     <button
-      type="submit"
+      class="flex flex-row gap-3 items-center bg-transparent text-gray-700 m-2 py-2 px-4 rounded-md border border-blue-400 transition ease-in-out delay-150 hover:bg-blue-100 hover:-translate-1 hover:scale-110 duration-200"
       id="submitFormBtn"
-      class="bg-blue-200 py-1 px-3 mt-2 rounded-xl border-2 border-blue-400 hidden"
-    >Zatwierdź</button>
+    >
+      <p>Zapisz</p>
+      <svg
+        class="w-5 h-5"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 -960 960 960"
+        fill="currentColor"
+      >
+        <path
+          d="M840-680v480q0 33-23.5 56.5T760-120H200q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h480l160 160Zm-80 34L646-760H200v560h560v-446ZM480-240q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35ZM240-560h360v-160H240v160Zm-40-86v446-560 114Z"
+        />
+      </svg>
+    </button>
   </div>`
 }
 
