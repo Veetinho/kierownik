@@ -1020,30 +1020,28 @@ function getInitialPlanningBlockHtml() {
     (a, b) => new Date(b.dateFrom).getTime() - new Date(a.dateFrom).getTime()
   )
 
-  const projects = projectsInfo?.map((v) => v.project)
-  if (projects.some((v) => v === undefined))
-    return setInitialPlanningInnerHtml()
+  // const projects = projectsInfo?.map((v) => v.project)
+  // if (projects.some((v) => v === undefined))
+  //   return setInitialPlanningInnerHtml()
 
-  const jobs = JSON.parse(localStorage.getItem('planJobsGeneral'))?.filter(
-    (v) => projects.includes(v.project)
-  )
-  if (jobs === undefined || jobs.length === 0)
-    return setInitialPlanningInnerHtml()
+  // const jobs = JSON.parse(localStorage.getItem('planJobsGeneral'))?.filter(
+  //   (v) => projects.includes(v.project)
+  // )
+  // if (jobs === undefined || jobs.length === 0)
+  //   return setInitialPlanningInnerHtml()
 
-  const jobsGrupped = Object.groupBy(jobs, ({ project }) => project)
-  if (jobsGrupped['undefined']) return setInitialPlanningInnerHtml()
+  // const jobsGrupped = Object.groupBy(jobs, ({ project }) => project)
+  // if (jobsGrupped['undefined']) return setInitialPlanningInnerHtml()
 
-  const jobTypes = JSON.parse(localStorage.getItem('jobs'))
-  if (jobTypes === null) return setInitialPlanningInnerHtml()
+  // const jobTypes = JSON.parse(localStorage.getItem('jobs'))
+  // if (jobTypes === null) return setInitialPlanningInnerHtml()
 
   let html = ''
-  let counter = 0
   for (const prjct of projectsInfo) {
-    ++counter
-    html += `<div id="obiekt1" class="border border-blue-400 rounded-xl">
-      <button @click="open = open === ${counter} ? null : ${counter}" class="flex flex-row items-center w-full p-4 rounded-md focus:outline-none">
+    html += `<div class="border border-blue-400 rounded-xl">
+      <div class="flex flex-row items-center w-full p-4 rounded-md focus:outline-none">
         <div class="w-3/12 text-left">${prjct.project}</div>
-        <div class="w-4/12 text-left">${prjct.contractor}</div>
+        <div class="w-3/12 text-left">${prjct.contractor}</div>
         <div class="w-2/12 flex justify-end">${getDatePolishFormat(
           prjct.dateFrom,
           true
@@ -1052,33 +1050,48 @@ function getInitialPlanningBlockHtml() {
           prjct.dateTo,
           true
         )}</div>
-        <div class="w-1/12 flex justify-end">
-          <svg :class="{ 'rotate-180': open === ${counter} }" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-          </svg>
+        <div class="w-2/12 flex justify-end">
+          <button
+            class="flex flex-row gap-3 items-center bg-transparent text-gray-900 py-2 px-4 rounded-md border border-blue-400"
+            data-project="${prjct.project}"
+            onclick="showDetailPlanningForm(this)"
+          >
+            <p>Edytuj</p>
+            <svg
+              class="w-5 h-5"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 -960 960 960"
+              fill="currentColor"
+            >
+              <path
+                d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v200h-80v-40H200v400h280v80H200Zm0-560h560v-80H200v80Zm0 0v-80 80ZM560-80v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q8 9 12.5 20t4.5 22q0 11-4 22.5T903-300L683-80H560Zm300-263-37-37 37 37ZM620-140h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z"
+              />
+            </svg>
+          </button>
         </div>
-      </button>
-      <div x-show="open === ${counter}" x-transition class="rounded-md p-4">
-        <form class="flex flex-col rounded-md border border-dashed border-blue-300 py-2">
-          ${getInitialPlanningInputsRowHtml(
-            jobTypes,
-            jobsGrupped[prjct.project]
-          )}
-          <div class="flex flex-row justify-end my-2">
-            <button class="bg-blue-200 rounded-md border border-1 border-blue-300 px-6 py-1 mx-2 hover:bg-blue-300 cursor-pointer">Zapisz</button>
-          </div>
-        </form>
       </div>
     </div>`
   }
   setInitialPlanningInnerHtml(html)
 }
 
-function getInitialPlanningInputsRowHtml(jobTypes, projectPlans) {
-  return jobTypes
-    .map((v) => {
-      const elem = getArrayElementByField(projectPlans, 'job', v.job)
-      return `<div class="flex flex-row justify-start items-center py-1 px-1">
+function showDetailPlanningForm(e) {
+  const project = e.getAttribute('data-project')
+  const jobs = JSON.parse(localStorage.getItem('planJobsGeneral'))?.filter(
+    (v) => v.project === project
+  )
+  const jobTypes = JSON.parse(localStorage.getItem('jobs'))
+  if (jobTypes === null) return setInitialPlanningInnerHtml()
+
+  const formHtml = getInitialPlanningInputsRowHtml(jobTypes, jobs)
+  const aboveFormHtml = getInitialPlanningFormHeaderHtml(project)
+  setInitialPlanningDetailInnerHtml(aboveFormHtml + formHtml)
+}
+
+function getInitialPlanningInputsRowHtml(jobTypes, jobs) {
+  const html = jobTypes.map((v) => {
+    const elem = getArrayElementByField(jobs, 'job', v.job)
+    return `<div class="flex flex-row justify-start items-center py-1 px-1">
       <input type="hidden" name="id" value="${elem?.id || ''}" />
       <input type="text" name="job" class="bg-transparent w-4/12 mx-1 italic" value="${
         v.job
@@ -1097,8 +1110,66 @@ function getInitialPlanningInputsRowHtml(jobTypes, projectPlans) {
       <input type="date" name="dateTo" class="bg-slate-100 border border-blue-200 rounded-md w-2/12 text-center mx-1 py-1"
       value="${elem?.dateTo || ''}"/>
     </div>`
-    })
-    .join('')
+  })
+  html.push(
+    `<div class="w-full flex justify-end">
+      <button
+        class="flex flex-row gap-3 items-center bg-transparent text-gray-700 m-2 py-2 px-4 rounded-md border border-blue-400 transition ease-in-out delay-150 hover:bg-blue-100 hover:-translate-1 hover:scale-110 duration-200"
+        onclick="showDetailPlanningForm(this)"
+      >
+        <p>Zapisz</p>
+        <svg
+          class="w-5 h-5"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 -960 960 960"
+          fill="currentColor"
+        >
+          <path
+            d="M840-680v480q0 33-23.5 56.5T760-120H200q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h480l160 160Zm-80 34L646-760H200v560h560v-446ZM480-240q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35ZM240-560h360v-160H240v160Zm-40-86v446-560 114Z"
+          />
+        </svg>
+      </button>
+    </div>`
+  )
+  return `<form class="border border-dashed border-blue-300 rounded-lg p-2">${html.join(
+    ''
+  )}</form>`
+}
+
+function getInitialPlanningFormHeaderHtml(project) {
+  const projects = JSON.parse(localStorage.getItem('projects'))
+  if (projects === null) return ''
+  const prjct = projects.find((v) => v.project == project)
+
+  return `<div class="border border-blue-400 rounded-xl mb-3">
+    <div class="flex flex-row items-center w-full p-4 rounded-md focus:outline-none">
+      <div class="w-3/12 text-left">${prjct.project}</div>
+      <div class="w-3/12 text-left">${prjct.contractor}</div>
+      <div class="w-2/12 flex justify-end">
+        ${getDatePolishFormat(prjct.dateFrom, true)}
+      </div>
+      <div class="w-2/12 flex justify-end">
+        ${getDatePolishFormat(prjct.dateTo, true)}
+      </div>
+      <div class="w-2/12 flex justify-end">
+        <button
+          class="flex bg-transparent text-gray-900 p-2 rounded-md border border-blue-400"
+          onclick="hideDetailPlanningForm()"
+        >
+          <svg
+            class="w-5 h-5"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 -960 960 960"
+            fill="currentColor"
+          >
+            <path
+              d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>`
 }
 
 function getArrayElementByField(arr, field, value) {
@@ -1110,9 +1181,19 @@ function getArrayElementByField(arr, field, value) {
 function setInitialPlanningInnerHtml(
   html = '<p class="p-3">Problem z pobieraniem danych...</p>'
 ) {
-  const initialPlanning = document
-    .getElementById('initialPlanning')
-    .querySelector('div')
-    .querySelector('div')
-  initialPlanning.innerHTML = html
+  _('initialPlanningGeneral').innerHTML = html
+}
+
+function setInitialPlanningDetailInnerHtml(html) {
+  const initialPlanningDetail = document.getElementById('initialPlanningDetail')
+  initialPlanningDetail.innerHTML = html
+  _('initialPlanningGeneral').classList.add('hidden')
+  initialPlanningDetail.classList.remove('hidden')
+}
+
+function hideDetailPlanningForm() {
+  const initialPlanningDetail = document.getElementById('initialPlanningDetail')
+  initialPlanningDetail.innerHTML = ''
+  _('initialPlanningGeneral').classList.remove('hidden')
+  initialPlanningDetail.classList.add('hidden')
 }
