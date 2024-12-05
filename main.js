@@ -707,7 +707,7 @@ function createNewForemanInputsBlock() {
 }
 
 function createSubmitFormButton() {
-  return `<div class="w-full flex justify-end">
+  return `<div class="self-end">
     <button
       class="flex flex-row gap-3 items-center bg-transparent text-gray-700 m-2 py-2 px-4 rounded-md border border-blue-400 duration-500 hover:bg-slate-300 hidden"
       id="submitFormBtn"
