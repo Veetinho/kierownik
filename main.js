@@ -709,7 +709,7 @@ function createNewForemanInputsBlock() {
 function createSubmitFormButton() {
   return `<div class="w-full flex justify-end">
     <button
-      class="flex flex-row gap-3 items-center bg-transparent text-gray-700 m-2 py-2 px-4 rounded-md border border-blue-400 transition ease-in-out delay-150 hover:bg-blue-100 hover:-translate-1 hover:scale-110 duration-200"
+      class="flex flex-row gap-3 items-center bg-transparent text-gray-700 m-2 py-2 px-4 rounded-md border border-blue-400 duration-500 hover:bg-slate-300 hidden"
       id="submitFormBtn"
     >
       <p>Zapisz</p>
@@ -1030,23 +1030,6 @@ function getInitialPlanningBlockHtml() {
   projectsInfo.sort(
     (a, b) => new Date(b.dateFrom).getTime() - new Date(a.dateFrom).getTime()
   )
-
-  // const projects = projectsInfo?.map((v) => v.project)
-  // if (projects.some((v) => v === undefined))
-  //   return setInitialPlanningInnerHtml()
-
-  // const jobs = JSON.parse(localStorage.getItem('planJobsGeneral'))?.filter(
-  //   (v) => projects.includes(v.project)
-  // )
-  // if (jobs === undefined || jobs.length === 0)
-  //   return setInitialPlanningInnerHtml()
-
-  // const jobsGrupped = Object.groupBy(jobs, ({ project }) => project)
-  // if (jobsGrupped['undefined']) return setInitialPlanningInnerHtml()
-
-  // const jobTypes = JSON.parse(localStorage.getItem('jobs'))
-  // if (jobTypes === null) return setInitialPlanningInnerHtml()
-
   let html = ''
   for (const prjct of projectsInfo) {
     html += `<div class="border border-blue-400 rounded-xl">
@@ -1063,7 +1046,7 @@ function getInitialPlanningBlockHtml() {
         )}</div>
         <div class="w-2/12 flex justify-end">
           <button
-            class="flex flex-row gap-3 items-center bg-transparent text-gray-900 py-2 px-4 rounded-md border border-blue-400"
+            class="flex flex-row gap-3 items-center bg-transparent text-gray-900 py-2 px-4 rounded-md border border-blue-400 duration-500 hover:bg-slate-300"
             data-project="${prjct.project}"
             onclick="showDetailPlanningForm(this)"
           >
@@ -1125,7 +1108,7 @@ function getInitialPlanningInputsRowHtml(jobTypes, jobs) {
   html.push(
     `<div class="w-full flex justify-end">
       <button
-        class="flex flex-row gap-3 items-center bg-transparent text-gray-700 m-2 py-2 px-4 rounded-md border border-blue-400 transition ease-in-out delay-150 hover:bg-blue-100 hover:-translate-1 hover:scale-110 duration-200"
+        class="flex flex-row gap-3 items-center bg-transparent text-gray-700 m-2 py-2 px-4 rounded-md border border-blue-400 duration-500 hover:bg-slate-300"
         onclick="showDetailPlanningForm(this)"
       >
         <p>Zapisz</p>
@@ -1164,7 +1147,7 @@ function getInitialPlanningFormHeaderHtml(project) {
       </div>
       <div class="w-2/12 flex justify-end">
         <button
-          class="flex bg-transparent text-gray-900 p-2 rounded-md border border-blue-400"
+          class="flex bg-transparent text-gray-900 p-2 rounded-md border border-blue-400 duration-500 hover:bg-slate-300"
           onclick="hideDetailPlanningForm()"
         >
           <svg
