@@ -1109,7 +1109,6 @@ function getInitialPlanningInputsRowHtml(jobTypes, jobs) {
     `<div class="w-full flex justify-end">
       <button
         class="flex flex-row gap-3 items-center bg-transparent text-gray-700 m-2 py-2 px-4 rounded-md border border-blue-400 duration-500 hover:bg-slate-300"
-        onclick="showDetailPlanningForm(this)"
       >
         <p>Zapisz</p>
         <svg
@@ -1125,7 +1124,7 @@ function getInitialPlanningInputsRowHtml(jobTypes, jobs) {
       </button>
     </div>`
   )
-  return `<form class="border border-dashed border-blue-300 rounded-lg p-2">${html.join(
+  return `<form id="initialPlanningDetailForm" onsubmit="event.preventDefault(); submitInitialPlanningForm(this)" class="border border-dashed border-blue-300 rounded-lg p-2">${html.join(
     ''
   )}</form>`
 }
@@ -1190,4 +1189,23 @@ function hideDetailPlanningForm() {
   initialPlanningDetail.innerHTML = ''
   _('initialPlanningGeneral').classList.remove('hidden')
   initialPlanningDetail.classList.add('hidden')
+}
+
+function submitInitialPlanningForm(e) {
+  const projectName = _('initialPlanningDetail').getElementsByClassName(
+    'w-3/12'
+  )[0]?.textContent
+  if (!projectName) return alert('Some issues with getting project info')
+  const initialPlanningDetailArray = []
+  const rows = e.querySelectorAll('div')
+  rows.forEach((v) => {
+    const inputs = v.querySelectorAll('input')
+    if (inputs.length === 0) return
+    const jobs = {}
+    inputs.forEach((i) => {
+      jobs[i.name] = i.value
+    })
+    initialPlanningDetailArray.push(jobs)
+  })
+  console.log(initialPlanningDetailArray)
 }
