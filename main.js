@@ -1210,9 +1210,12 @@ function submitInitialPlanningForm(e) {
     if (!validateRowData.isValid) isFormDataValid = false
     if (!validateRowData.isEmpty) initialPlanningDetailArray.push(jobs)
   })
-  const grupped = Object.groupBy(initialPlanningDetailArray, (id) =>
+  if (!isFormDataValid) return alert('Invalid data')
+  if (initialPlanningDetailArray.length === 0) return alert('Form is empty')
+  const grupped = Object.groupBy(initialPlanningDetailArray, ({ id }) =>
     id == '' ? 'new' : 'exists'
   )
+  if (!grupped.new) alert('Nothing changed')
   console.log(grupped)
 }
 
@@ -1236,6 +1239,10 @@ function validateFormRowData(obj) {
     res.isEmpty = false
     res.isValid = true
   }
-
+  if (
+    !res.isEmpty &&
+    new Date(obj.dateFrom).getTime() > new Date(obj.dateTo).getTime()
+  )
+    res.isValid = false
   return res
 }
