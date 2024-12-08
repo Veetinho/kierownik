@@ -1196,6 +1196,7 @@ function submitInitialPlanningForm(e) {
     'w-3/12'
   )[0]?.textContent
   if (!projectName) return alert('Some issues with getting project info')
+  let isFormDataValid = true
   const initialPlanningDetailArray = []
   const rows = e.querySelectorAll('div')
   rows.forEach((v) => {
@@ -1205,7 +1206,36 @@ function submitInitialPlanningForm(e) {
     inputs.forEach((i) => {
       jobs[i.name] = i.value
     })
-    initialPlanningDetailArray.push(jobs)
+    const validateRowData = validateFormRowData(jobs)
+    if (!validateRowData.isValid) isFormDataValid = false
+    if (!validateRowData.isEmpty) initialPlanningDetailArray.push(jobs)
   })
-  console.log(initialPlanningDetailArray)
+  const grupped = Object.groupBy(initialPlanningDetailArray, (id) =>
+    id == '' ? 'new' : 'exists'
+  )
+  console.log(grupped)
+}
+
+function validateFormRowData(obj) {
+  const res = {
+    isValid: false,
+    isEmpty: true,
+  }
+  if (
+    obj.dateFrom === '' &&
+    obj.dateTo === '' &&
+    (obj.quantity === '' || obj.quantity == 0)
+  )
+    res.isValid = true
+  if (
+    obj.dateFrom !== '' &&
+    obj.dateTo !== '' &&
+    obj.quantity !== '' &&
+    obj.quantity != 0
+  ) {
+    res.isEmpty = false
+    res.isValid = true
+  }
+
+  return res
 }
