@@ -9,7 +9,7 @@
   right: 0;
   transform: translateY(100vh);
   opacity: 0;
-  transition: all 0.5s;
+  transition: transform 0.5s, opacity 0.5s;
   z-index: 9999;
   cursor: default;
 }
@@ -17,6 +17,17 @@
 .toast.show {
   transform: translateY(0);
   opacity: 1;
+}
+
+.toast.hide {
+  transform: translateX(100%);
+  opacity: 0;
+  transition: transform 0.5s, opacity 0.5s;
+}
+
+.toast.hide-complete {
+  transform: translateY(100vh);
+  opacity: 0;
 }
 
 aside > div > ul > .active {

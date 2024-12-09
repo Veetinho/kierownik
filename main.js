@@ -49,7 +49,17 @@ function showToast(msg = 'Pomyślnie zapisane', status = 'success') {
   const toastBody = toast.querySelector('.toast-body')
   const color = getToastColorByStatus(status)
   toastBody.classList.add(`bg-${color}-200`, `border-${color}-300`)
+  toast.classList.remove('hide-complete')
   toast.classList.add('show')
+}
+
+function hideToast() {
+  toast.classList.remove('show')
+  toast.classList.add('hide')
+  setTimeout(() => {
+    toast.classList.remove('hide')
+    toast.classList.add('hide-complete')
+  }, 500)
 }
 
 function getToastColorByStatus(status) {
@@ -61,10 +71,6 @@ function getToastColorByStatus(status) {
     default:
       return 'emerald'
   }
-}
-
-function hideToast() {
-  toast.classList.remove('show')
 }
 
 function showLoader() {
@@ -1139,7 +1145,7 @@ function getInitialPlanningInputsRowHtml(jobTypes, jobs) {
       <input type="text" name="department" value="${
         v.department
       }" class="bg-transparent w-2/12 mx-1 italic" readonly disabled />
-      <input type="text" name="quantity" autocomplete="off" value="${
+      <input type="text" name="quantity" autocomplete="off" onfocusout="validatePercentage(this)" value="${
         elem?.quantity || ''
       }" class="bg-slate-100 border border-blue-200 rounded-md w-1/12 mx-1 p-1 text-right" oninput="intInputPattern(this)" maxlength="6" />
       <input type="text" name="unit" value="${
@@ -1263,7 +1269,9 @@ function submitInitialPlanningForm(e) {
   const grupped = Object.groupBy(initialPlanningDetailArray, ({ id }) =>
     id == '' ? 'new' : 'exists'
   )
-  if (!grupped.new) return showCustomModal('Uwaga', 'Nie było żadnych zmian')
+  const isFormDataChanged = getIsFormDataChanged(grupped.exists)
+  if (!grupped.new && !isFormDataChanged)
+    return showCustomModal('Uwaga', 'Nie było żadnych zmian')
 
   console.log(grupped)
 
@@ -1272,7 +1280,25 @@ function submitInitialPlanningForm(e) {
     hideLoader()
     showToast()
     setTimeout(hideToast, 3000)
-  }, 2000)
+  }, 500)
+}
+
+function getIsFormDataChanged(exists) {
+  if (!exists) return false
+  const stored = JSON.parse(localStorage.getItem('planJobsGeneral'))
+  if (!stored) return true
+  for (const e of exists) {
+    for (const s of stored) {
+      if (
+        e.id == s.id &&
+        (e.quantity != s.quantity ||
+          e.dateFrom != s.dateFrom ||
+          e.dateTo != s.dateTo)
+      )
+        return true
+    }
+  }
+  return false
 }
 
 function validateFormRowData(obj) {
@@ -1301,4 +1327,14 @@ function validateFormRowData(obj) {
   )
     res.isValid = false
   return res
+}
+
+function validatePercentage(e) {
+  const row = e.closest('div')
+  const unit = row.querySelector('[name="unit"]')
+  const job = row.querySelector('[name="job"]')
+  if (unit.value === '%' && e.value != '' && e.value != 100) {
+    e.value = ''
+    return showCustomModal('Bląd', `Nie prawidłowo podana wartość ${job.value}`)
+  }
 }
