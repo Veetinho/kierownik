@@ -3,6 +3,22 @@
   padding: 0;
 }
 
+.toast {
+  position: fixed;
+  top: 3.5rem;
+  right: 0;
+  transform: translateY(100vh);
+  opacity: 0;
+  transition: all 0.5s;
+  z-index: 9999;
+  cursor: default;
+}
+
+.toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
 aside > div > ul > .active {
   background-color: #cbd5e1;
   border-left: 3px;
@@ -31,4 +47,24 @@ header > div > ul > .active {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(148, 163, 184, 0.7);
+}
+
+.customModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(148, 163, 184, 0.7);
 }

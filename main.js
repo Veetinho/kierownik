@@ -1,5 +1,8 @@
 const _ = (id) => document.getElementById(id)
 const sidebar = _('sidebar')
+const loader = document.querySelector('.loader')
+const customModal = document.querySelector('.customModal')
+const toast = _('toast')
 const chartJobPlan = createJobPlanChart(
   _('chartJobPlan'),
   ['Plan'],
@@ -40,6 +43,49 @@ document.addEventListener('DOMContentLoaded', async () => {
   // )
   setProjectDropdownOptions(JSON.parse(localStorage.getItem('projects')))
 })
+
+function showToast(msg = 'Pomyślnie zapisane', status = 'success') {
+  toast.querySelector('.toast-body').innerHTML = msg
+  const toastBody = toast.querySelector('.toast-body')
+  const color = getToastColorByStatus(status)
+  toastBody.classList.add(`bg-${color}-200`, `border-${color}-300`)
+  toast.classList.add('show')
+}
+
+function getToastColorByStatus(status) {
+  switch (status) {
+    case 'danger':
+      return 'red'
+    case 'warning':
+      return 'orange'
+    default:
+      return 'emerald'
+  }
+}
+
+function hideToast() {
+  toast.classList.remove('show')
+}
+
+function showLoader() {
+  loader.classList.remove('hidden')
+}
+
+function hideLoader() {
+  loader.classList.add('hidden')
+  customModal.querySelector('h2').innerHTML = 'Title'
+  customModal.querySelector('p').innerHTML = 'Message'
+}
+
+function showCustomModal(title = 'Uwaga', body = 'Coś poszło nie tak') {
+  customModal.querySelector('h2').innerHTML = title
+  customModal.querySelector('p').innerHTML = body
+  customModal.classList.remove('hidden')
+}
+
+function closeCustomModal() {
+  customModal.classList.add('hidden')
+}
 
 function setToLocalStorage(...items) {
   console.log('local')
@@ -1093,7 +1139,7 @@ function getInitialPlanningInputsRowHtml(jobTypes, jobs) {
       <input type="text" name="department" value="${
         v.department
       }" class="bg-transparent w-2/12 mx-1 italic" readonly disabled />
-      <input type="text" name="quantity" value="${
+      <input type="text" name="quantity" autocomplete="off" value="${
         elem?.quantity || ''
       }" class="bg-slate-100 border border-blue-200 rounded-md w-1/12 mx-1 p-1 text-right" oninput="intInputPattern(this)" maxlength="6" />
       <input type="text" name="unit" value="${
@@ -1210,13 +1256,23 @@ function submitInitialPlanningForm(e) {
     if (!validateRowData.isValid) isFormDataValid = false
     if (!validateRowData.isEmpty) initialPlanningDetailArray.push(jobs)
   })
-  if (!isFormDataValid) return alert('Invalid data')
-  if (initialPlanningDetailArray.length === 0) return alert('Form is empty')
+  if (!isFormDataValid)
+    return showCustomModal('Uwaga', 'Nie poprawnie wypełniony formularz')
+  if (initialPlanningDetailArray.length === 0)
+    return showCustomModal('Uwaga', 'Formularz jest pusty')
   const grupped = Object.groupBy(initialPlanningDetailArray, ({ id }) =>
     id == '' ? 'new' : 'exists'
   )
-  if (!grupped.new) alert('Nothing changed')
+  if (!grupped.new) return showCustomModal('Uwaga', 'Nie było żadnych zmian')
+
   console.log(grupped)
+
+  showLoader()
+  setTimeout(() => {
+    hideLoader()
+    showToast()
+    setTimeout(hideToast, 3000)
+  }, 2000)
 }
 
 function validateFormRowData(obj) {

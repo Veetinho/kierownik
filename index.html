@@ -9,6 +9,18 @@
     <title>Kierownik</title>
   </head>
   <body class="bg-slate-200">
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+      <div
+        class="toast-body bg-emerald-200 border border-emerald-300 rounded-lg m-4 px-6 py-4"
+      >
+        Message
+      </div>
+    </div>
+
+    <!-- DIALOG -->
+
+    <!-- HEADER -->
     <header class="w-full max-h-14 fixed top-0 z-50 bg-slate-300/80">
       <div
         class="container mx-auto p-3 w-full flex flex-row items-center gap-2"
@@ -447,6 +459,51 @@
         </section>
       </section>
     </main>
+
+    <!-- LOADER -->
+    <div class="loader flex justify-center items-center hidden">
+      <div
+        class="flex flex-row justify-center items-center gap-4"
+        role="status"
+      >
+        <svg
+          class="animate-spin w-8 h-8"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 -960 960 960"
+          fill="currentColor"
+        >
+          <path
+            d="M480-80q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 31.5-155.5t86-127Q252-817 325-848.5T480-880q17 0 28.5 11.5T520-840q0 17-11.5 28.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160q133 0 226.5-93.5T800-480q0-17 11.5-28.5T840-520q17 0 28.5 11.5T880-480q0 82-31.5 155t-86 127.5q-54.5 54.5-127 86T480-80Z"
+          />
+        </svg>
+        <span>Loading...</span>
+      </div>
+    </div>
+
+    <!-- MODAL -->
+    <div class="customModal flex justify-center items-center hidden">
+      <div class="bg-slate-100 rounded-lg shadow-lg w-96 p-6 relative">
+        <button
+          onclick="closeCustomModal()"
+          class="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-sm text-2xl text-gray-600 duration-500 hover:bg-slate-300"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 -960 960 960"
+            fill="currentColor"
+          >
+            <path
+              d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"
+            />
+          </svg>
+        </button>
+        <h2 class="text-lg text-gray-800 font-bold mb-4">Custom Dialog</h2>
+        <p class="text-gray-600 mb-6">
+          This is a custom dialog box styled with Tailwind CSS. You can add your
+          own content here.
+        </p>
+      </div>
+    </div>
 
     <script src="main.js"></script>
   </body>
