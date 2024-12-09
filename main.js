@@ -125,6 +125,7 @@ sidebar.addEventListener('click', (e) => {
   })
   li.classList.add('active')
   _(activeDataSection).classList.remove('hidden')
+  hideDetailPlanningForm()
 })
 
 _('detailPlanListForm').addEventListener('submit', (e) => {
