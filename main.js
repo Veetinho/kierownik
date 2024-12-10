@@ -23,6 +23,7 @@ const chartEmployeesPlanFact = createEmployeesPlanFactChart(
 )
 
 document.addEventListener('DOMContentLoaded', async () => {
+  setActiveSection()
   getInitialPlanningBlockHtml()
   setPlanDatesRange()
   // const {
@@ -43,6 +44,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   // )
   setProjectDropdownOptions(JSON.parse(localStorage.getItem('projects')))
 })
+
+function setActiveSection() {
+  const id = _('sidebar').querySelector('li').getAttribute('data-section')
+  _(id).classList.remove('hidden')
+}
 
 function showToast(msg = 'Pomyślnie zapisane', status = 'success') {
   toast.querySelector('.toast-body').innerHTML = msg
@@ -1281,7 +1287,7 @@ function submitInitialPlanningForm(e) {
     hideLoader()
     showToast()
     setTimeout(hideToast, 3000)
-  }, 500)
+  }, 2000)
 }
 
 function getIsFormDataChanged(exists) {
