@@ -3,24 +3,10 @@ const sidebar = _('sidebar')
 const loader = document.querySelector('.loader')
 const customModal = document.querySelector('.customModal')
 const toast = _('toast')
-const chartJobPlan = createJobPlanChart(
-  _('chartJobPlan'),
-  ['Plan'],
-  'Plan wykonywania'
-)
-const chartJobPlanFact = createJobPlanChart(
-  _('chartJobPlanFact'),
-  ['Plan/Fakt'],
-  'Plan/fakt wykonywania'
-)
-const chartEmployeesPlan = createEmployeesQuantityChart(
-  _('chartEmployeesPlan'),
-  ['Ilość'],
-  'Pracowniki plan'
-)
-const chartEmployeesPlanFact = createEmployeesPlanFactChart(
-  _('chartEmployeesPlanFact')
-)
+const chartJobPlan = createJobPlanChart(_('chartJobPlan'), ['Plan'], 'Plan wykonywania')
+const chartJobPlanFact = createJobPlanChart(_('chartJobPlanFact'), ['Plan/Fakt'], 'Plan/fakt wykonywania')
+const chartEmployeesPlan = createEmployeesQuantityChart(_('chartEmployeesPlan'), ['Ilość'], 'Pracowniki plan')
+const chartEmployeesPlanFact = createEmployeesPlanFactChart(_('chartEmployeesPlanFact'))
 
 document.addEventListener('DOMContentLoaded', async () => {
   setActiveSection()
@@ -107,9 +93,7 @@ function setToLocalStorage(...items) {
 }
 
 async function fetchData() {
-  const data = await fetch(
-    'https://script.google.com/a/macros/ispik.eu/s/AKfycbzJCQ-72SHrtq5rWk10ligJlfk7TFj3r4rRALmZK0VSUINcMDWE_bzwdizqkOIUGdm0/exec'
-  )
+  const data = await fetch('https://script.google.com/a/macros/ispik.eu/s/AKfycbzJCQ-72SHrtq5rWk10ligJlfk7TFj3r4rRALmZK0VSUINcMDWE_bzwdizqkOIUGdm0/exec')
   const json = await data.json()
   return json
 }
@@ -158,8 +142,7 @@ _('planDateStart').addEventListener('change', (e) => {
 
 _('planDateEnd').addEventListener('change', (e) => {
   const value = e.target.value
-  if (new Date(value).getTime() < new Date(_('planDateStart').value))
-    setPlanDateEnd(_('planDateStart').value)
+  if (new Date(value).getTime() < new Date(_('planDateStart').value)) setPlanDateEnd(_('planDateStart').value)
   if (value === '' || value.startsWith(0)) return
   const daysBetween = getDatesRange()
   updatePlanQuantitySum()
@@ -169,12 +152,8 @@ _('planDateEnd').addEventListener('change', (e) => {
 _('planObject').addEventListener('input', () => {
   const project = _('planObject').value
   const jobs = JSON.parse(localStorage.getItem('planJobsGeneral'))
-  const options = jobs
-    .filter((v) => v.project === project)
-    .map((v) => `<option value="${v.job}">${v.job}</option>`)
-  options.unshift(
-    '<option selected disabled value="">Wybierz rodzaj robót...</option>'
-  )
+  const options = jobs.filter((v) => v.project === project).map((v) => `<option value="${v.job}">${v.job}</option>`)
+  options.unshift('<option selected disabled value="">Wybierz rodzaj robót...</option>')
   clearPlanObjectExtraInfo()
   updatePlanJobType(options.join(''))
   updatePlanJobDayQuantity()
@@ -187,9 +166,7 @@ _('planJobType').addEventListener('input', () => {
   const project = _('planObject').value
   const job = _('planJobType').value
   const jobs = JSON.parse(localStorage.getItem('planJobsGeneral'))
-  const projectJob = jobs.filter(
-    (v) => v.job === job && v.project === project
-  )[0]
+  const projectJob = jobs.filter((v) => v.job === job && v.project === project)[0]
   updatePlanObjectExtraInfo(projectJob)
   updatePlanJobDayQuantity()
   updatePlanQuantityTotal(projectJob?.quantity || 0)
@@ -225,9 +202,7 @@ function getDatesRange() {
     })
     daysBetween.allDays++
     if (new Date(ds).getDay() !== 0) daysBetween.workDays++
-    ds = new Date(new Date(ds).getTime() + 24 * 60 * 60 * 1000)
-      .toISOString()
-      .replace(/T.+/g, '')
+    ds = new Date(new Date(ds).getTime() + 24 * 60 * 60 * 1000).toISOString().replace(/T.+/g, '')
   }
   daysBetween.allDays++
   daysBetween.dates.push({
@@ -244,9 +219,7 @@ function setPlanDateEnd(date) {
 
 function updatePlanJobType(innerHtml, removeDisabled = true) {
   _('planJobType').innerHTML = innerHtml
-  removeDisabled === true
-    ? _('planJobType').removeAttribute('disabled')
-    : _('planJobType').setAttribute('disabled', true)
+  removeDisabled === true ? _('planJobType').removeAttribute('disabled') : _('planJobType').setAttribute('disabled', true)
 }
 
 function updatePlanQuantityTotal(value = 0) {
@@ -300,19 +273,14 @@ function onchangeDetailPlanListForm() {
 
   const btn = _('submitFormBtn')
 
-  if (_('planQuantitySum').textContent > 0 && comparingResult === 0)
-    btn.classList.remove('hidden')
+  if (_('planQuantitySum').textContent > 0 && comparingResult === 0) btn.classList.remove('hidden')
   else if (btn) btn.classList.add('hidden')
 }
 
 function updatePlanQuantitySum(data) {
   if (!data) return (_('planQuantitySum').textContent = 0)
   const coeff = parseFloat(_('planJobDayQuantity').value) || 0
-  _('planQuantitySum').textContent = Math.round(
-    data
-      .map((v) => v.employees.reduce((a, b) => Number(a) + Number(b), 0))
-      .reduce((a, b) => Number(a) + Number(b), 0) * coeff
-  )
+  _('planQuantitySum').textContent = Math.round(data.map((v) => v.employees.reduce((a, b) => Number(a) + Number(b), 0)).reduce((a, b) => Number(a) + Number(b), 0) * coeff)
 }
 
 function setProjectDropdownOptions(projects) {
@@ -323,9 +291,7 @@ function setProjectDropdownOptions(projects) {
       return 0
     })
     .map((v) => `<option value="${v.project}">${v.project}</option>`)
-  options.unshift(
-    '<option selected disabled value="">Wybierz obiekt...</option>'
-  )
+  options.unshift('<option selected disabled value="">Wybierz obiekt...</option>')
   _('planObject').innerHTML = options.join('')
   _('planFactObject').innerHTML = options.join('')
 }
@@ -345,40 +311,14 @@ function setPlanDatesRange() {
   setPlanEndDatesRange()
 }
 
-function setPlanStartDatesRange(
-  daysFromTodayForMin = -31,
-  daysFromTodayForMax = 365
-) {
-  _('planDateStart').setAttribute(
-    'min',
-    new Date(Date.now() + daysFromTodayForMin * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .replace(/T.+/g, '')
-  )
-  _('planDateStart').setAttribute(
-    'max',
-    new Date(Date.now() + daysFromTodayForMax * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .replace(/T.+/g, '')
-  )
+function setPlanStartDatesRange(daysFromTodayForMin = -31, daysFromTodayForMax = 365) {
+  _('planDateStart').setAttribute('min', new Date(Date.now() + daysFromTodayForMin * 24 * 60 * 60 * 1000).toISOString().replace(/T.+/g, ''))
+  _('planDateStart').setAttribute('max', new Date(Date.now() + daysFromTodayForMax * 24 * 60 * 60 * 1000).toISOString().replace(/T.+/g, ''))
 }
 
-function setPlanEndDatesRange(
-  daysFromTodayForMin = -30,
-  daysFromTodayForMax = 366
-) {
-  _('planDateEnd').setAttribute(
-    'min',
-    new Date(Date.now() + daysFromTodayForMin * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .replace(/T.+/g, '')
-  )
-  _('planDateEnd').setAttribute(
-    'max',
-    new Date(Date.now() + daysFromTodayForMax * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .replace(/T.+/g, '')
-  )
+function setPlanEndDatesRange(daysFromTodayForMin = -30, daysFromTodayForMax = 366) {
+  _('planDateEnd').setAttribute('min', new Date(Date.now() + daysFromTodayForMin * 24 * 60 * 60 * 1000).toISOString().replace(/T.+/g, ''))
+  _('planDateEnd').setAttribute('max', new Date(Date.now() + daysFromTodayForMax * 24 * 60 * 60 * 1000).toISOString().replace(/T.+/g, ''))
 }
 
 function resetHelpingCalcForm() {
@@ -403,18 +343,11 @@ function resetGeneralPlanInfoForm() {
 function onChangeCalcDrop1(e) {
   if (e.value === '') return
   const calcDrop2 = _('calcDrop2')
-  const arr = [
-    'Wybierz z listy...',
-    'Ilość dni',
-    'Ilość pracowników (dziennie)',
-    'Ilość płanowana (1pr/1dź)',
-  ]
+  const arr = ['Wybierz z listy...', 'Ilość dni', 'Ilość pracowników (dziennie)', 'Ilość płanowana (1pr/1dź)']
   calcDrop2.innerHTML = arr
     .filter((v) => v !== e.value)
     .map((v, i) => {
-      return i === 0
-        ? `<option selected disabled value="">${v}</option>`
-        : `<option value="${v}">${v}</option>`
+      return i === 0 ? `<option selected disabled value="">${v}</option>` : `<option value="${v}">${v}</option>`
     })
     .join('')
   calcDrop2.removeAttribute('disabled')
@@ -430,11 +363,7 @@ function calculateHelpingResult(e) {
   const calcInput1 = _('calcInput1').value
   const calcInput2 = _('calcInput2').value
   if (calcInput1 && calcInput2) {
-    _('calcResultValue').textContent = (
-      _('planQuantityTotal').textContent /
-      calcInput1 /
-      calcInput2
-    ).toFixed(2)
+    _('calcResultValue').textContent = (_('planQuantityTotal').textContent / calcInput1 / calcInput2).toFixed(2)
   }
 }
 
@@ -450,11 +379,7 @@ function intInputPattern(e) {
 }
 
 function setHelpingCategory() {
-  _('calcResultCategory').textContent = [
-    'Ilość dni',
-    'Ilość pracowników (dziennie)',
-    'Ilość płanowana (1pr/1dź)',
-  ].filter((v) => v !== _('calcDrop1').value && v !== _('calcDrop2').value)[0]
+  _('calcResultCategory').textContent = ['Ilość dni', 'Ilość pracowników (dziennie)', 'Ilość płanowana (1pr/1dź)'].filter((v) => v !== _('calcDrop1').value && v !== _('calcDrop2').value)[0]
   _('calcInput2').value = ''
   _('calcResultValue').textContent = ''
 }
@@ -472,25 +397,14 @@ function addOneMoreForemanBlock(e) {
 }
 
 function updateDatesRangeFormInnerHtml(dates) {
-  _('detailPlanListForm').innerHTML =
-    createDatesRangeFormInnerHtml(dates) + createSubmitFormButton()
+  _('detailPlanListForm').innerHTML = createDatesRangeFormInnerHtml(dates) + createSubmitFormButton()
 }
 
-function updatePlanDataAndCharts(
-  daysBetween,
-  dataJob = null,
-  dataEmployees = null
-) {
+function updatePlanDataAndCharts(daysBetween, dataJob = null, dataEmployees = null) {
   setDaysQuantity(daysBetween)
   updateDatesRangeFormInnerHtml(daysBetween.dates)
-  updateJobPlanChart(
-    daysBetween.dates,
-    dataJob || new Array(daysBetween.dates.length).fill(0)
-  )
-  updateEmployeesQuantityChart(
-    daysBetween.dates,
-    dataEmployees || new Array(daysBetween.dates.length).fill(0)
-  )
+  updateJobPlanChart(daysBetween.dates, dataJob || new Array(daysBetween.dates.length).fill(0))
+  updateEmployeesQuantityChart(daysBetween.dates, dataEmployees || new Array(daysBetween.dates.length).fill(0))
 }
 
 function getChartColor(result) {
@@ -655,27 +569,12 @@ function getGeneralPlanListFormData() {
 }
 
 function getPolishMonthName(num) {
-  return [
-    'sty',
-    'lut',
-    'mar',
-    'kwi',
-    'maj',
-    'cze',
-    'lip',
-    'sie',
-    'wrz',
-    'paź',
-    'lis',
-    'gru',
-  ][num]
+  return ['sty', 'lut', 'mar', 'kwi', 'maj', 'cze', 'lip', 'sie', 'wrz', 'paź', 'lis', 'gru'][num]
 }
 
 function getDatePolishFormat(date, isYear = false) {
   const newDate = new Date(date)
-  return `${newDate.getDate()} ${getPolishMonthName(newDate.getMonth())}${
-    isYear === true ? ` ${newDate.getFullYear()}` : ''
-  }`
+  return `${newDate.getDate()} ${getPolishMonthName(newDate.getMonth())}${isYear === true ? ` ${newDate.getFullYear()}` : ''}`
 }
 
 function createDatesRangeFormInnerHtml(dates) {
@@ -684,9 +583,7 @@ function createDatesRangeFormInnerHtml(dates) {
   return dates
     .map((v, i) => {
       const color = v.isWeekend ? '#cbd5e1' : '#e2e8f0'
-      return `<div class="flex flex-row gap-2 w-full items-center justify-start p-1 border-${
-        i === lastIndx ? 'y' : 't'
-      } border-slate-300 ${v.isWeekend ? `bg-[${color}]` : ''}">
+      return `<div class="flex flex-row gap-2 w-full items-center justify-start p-1 border-${i === lastIndx ? 'y' : 't'} border-slate-300 ${v.isWeekend ? `bg-[${color}]` : ''}">
       <p class="w-16" data-date="${v.date}">${getDatePolishFormat(v.date)}</p>
       <div class="flex flex-col gap-1 items-center mr-auto">
         <div class="flex flex-row gap-2">
@@ -791,14 +688,8 @@ function getPlanObjectExtraInfoHtml(obj) {
     <p class="text-sm">Nazwa projektu: ${obj.project}</p>
     <p class="text-sm mt-1">Dział: ${obj.department}</p>
     <p class="text-sm mt-1">Rodzaj robót: ${obj.job}</p>
-    <p class="text-sm mt-1">Planowa data rozpoczęcia robót: ${getDatePolishFormat(
-      obj.dateFrom,
-      true
-    )}</p>
-    <p class="text-sm mt-1">Planowa data zakończenia robót: ${getDatePolishFormat(
-      obj.dateTo,
-      true
-    )}`
+    <p class="text-sm mt-1">Planowa data rozpoczęcia robót: ${getDatePolishFormat(obj.dateFrom, true)}</p>
+    <p class="text-sm mt-1">Planowa data zakończenia robót: ${getDatePolishFormat(obj.dateTo, true)}`
 }
 
 /* ================================ PLAN / FACT ================================ */
@@ -806,10 +697,7 @@ function getPlanObjectExtraInfoHtml(obj) {
 function resetGeneralPlanFactInfoForm() {
   _('generalPlanFactInfoForm').reset()
   clearPlanFactObjectExtraInfo()
-  updatePlanFactJobType(
-    '<option selected disabled value="">Wybierz rodzaj robót...</option>',
-    false
-  )
+  updatePlanFactJobType('<option selected disabled value="">Wybierz rodzaj robót...</option>', false)
   updateJobPlanFactChart()
   updateEmployeesPlanFactChart()
   updatePlanFactQuantityTotal()
@@ -823,9 +711,7 @@ _('planFactObject').addEventListener('input', () => {
   const allPlans = plans.filter((v) => v.project === project).map((v) => v.job)
   const uniqueJobs = Array.from(new Set([...allJobs, ...allPlans]))
   const options = uniqueJobs.map((v) => `<option value="${v}">${v}</option>`)
-  options.unshift(
-    '<option selected disabled value="">Wybierz rodzaj robót...</option>'
-  )
+  options.unshift('<option selected disabled value="">Wybierz rodzaj robót...</option>')
   updatePlanFactJobType(options.join(''))
   updateJobPlanFactChart()
   updateEmployeesPlanFactChart()
@@ -836,31 +722,22 @@ _('planFactJobType').addEventListener('input', () => {
   const project = _('planFactObject').value
   const job = _('planFactJobType').value
   const jobs = JSON.parse(localStorage.getItem('planJobsGeneral'))
-  const projectJob = jobs.filter(
-    (v) => v.job === job && v.project === project
-  )[0]
+  const projectJob = jobs.filter((v) => v.job === job && v.project === project)[0]
   updatePlanFactObjectExtraInfo(projectJob)
   const factJobQuantity = getPlanFactDataToUpdateCharts()
-  updatePlanFactQuantityTotal(
-    projectJob?.quantity || 0,
-    projectJob?.unit || null,
-    factJobQuantity
-  )
+  updatePlanFactQuantityTotal(projectJob?.quantity || 0, projectJob?.unit || null, factJobQuantity)
 })
 
 function updatePlanFactJobType(innerHtml, removeDisabled = true) {
   _('planFactJobType').innerHTML = innerHtml
-  removeDisabled === true
-    ? _('planFactJobType').removeAttribute('disabled')
-    : _('planFactJobType').setAttribute('disabled', true)
+  removeDisabled === true ? _('planFactJobType').removeAttribute('disabled') : _('planFactJobType').setAttribute('disabled', true)
 }
 
 function updatePlanFactQuantityTotal(total = 0, unit = null, fact = 0) {
   const numberFormat = new Intl.NumberFormat('pl-PL')
   const totalFormatted = numberFormat.format(total)
   const factFormatted = numberFormat.format(fact)
-  const valueToDisplay =
-    unit === null ? 0 : `${factFormatted} / ${totalFormatted} ${unit}`
+  const valueToDisplay = unit === null ? 0 : `${factFormatted} / ${totalFormatted} ${unit}`
   _('planFactQuantityTotal').textContent = valueToDisplay
 }
 
@@ -882,9 +759,7 @@ function getPlanFactDataToUpdateCharts() {
   const factJobsDetail = JSON.parse(localStorage.getItem('factJobsDetail'))
   const planJobsDetail = JSON.parse(localStorage.getItem('planJobsDetail'))
 
-  const factJobsDetailFiltered = factJobsDetail.filter(
-    (v) => v.project === project && v.job === jobType
-  )
+  const factJobsDetailFiltered = factJobsDetail.filter((v) => v.project === project && v.job === jobType)
   const datesFact = getMinAndMaxDateValue(factJobsDetailFiltered, 'date')
   const factJobsDetailMap = new Map()
   const factEmployeesMap = new Map()
@@ -893,55 +768,28 @@ function getPlanFactDataToUpdateCharts() {
     factEmployeesMap.set(getDatePolishFormat(v.date, true), v.employees || 0)
   })
 
-  const planJobsDetailFiltered = planJobsDetail.filter(
-    (v) => v.project === project && v.job === jobType
-  )
+  const planJobsDetailFiltered = planJobsDetail.filter((v) => v.project === project && v.job === jobType)
   const datesPlan = getMinAndMaxDateValue(planJobsDetailFiltered, 'date')
   const planJobsDetailMap = new Map()
   const planEmployeesMap = new Map()
   planJobsDetailFiltered.forEach((v) => {
-    planJobsDetailMap.set(
-      getDatePolishFormat(v.date, true),
-      parseFloat(v.quantity * v.resources * 6)
-    )
+    planJobsDetailMap.set(getDatePolishFormat(v.date, true), parseFloat(v.quantity * v.resources * 6))
     planEmployeesMap.set(getDatePolishFormat(v.date, true), v.resources)
   })
 
-  const arrayOfDates = getArrayOfDates(
-    Math.min(...datesFact, ...datesPlan),
-    Math.max(...datesFact, ...datesPlan)
-  )
+  const arrayOfDates = getArrayOfDates(Math.min(...datesFact, ...datesPlan), Math.max(...datesFact, ...datesPlan))
 
-  const factJobQuantity = arrayOfDates
-    .filter((v) => v < Date.now())
-    .map((v) => factJobsDetailMap.get(getDatePolishFormat(v, true)) || 0)
-  const factEmployeesQuantity = arrayOfDates
-    .filter((v) => v < Date.now())
-    .map((v) => factEmployeesMap.get(getDatePolishFormat(v, true)) || 0)
+  const factJobQuantity = arrayOfDates.filter((v) => v < Date.now()).map((v) => factJobsDetailMap.get(getDatePolishFormat(v, true)) || 0)
+  const factEmployeesQuantity = arrayOfDates.filter((v) => v < Date.now()).map((v) => factEmployeesMap.get(getDatePolishFormat(v, true)) || 0)
 
-  const planJobQuantity = arrayOfDates.map(
-    (v) => planJobsDetailMap.get(getDatePolishFormat(v, true)) || 0
-  )
-  const planEmployeesQuantity = arrayOfDates.map(
-    (v) => planEmployeesMap.get(getDatePolishFormat(v, true)) || 0
-  )
+  const planJobQuantity = arrayOfDates.map((v) => planJobsDetailMap.get(getDatePolishFormat(v, true)) || 0)
+  const planEmployeesQuantity = arrayOfDates.map((v) => planEmployeesMap.get(getDatePolishFormat(v, true)) || 0)
 
   let predictJobQuantity = null
-  if (planJobQuantity.length - factJobQuantity.length > 2)
-    predictJobQuantity = getPredictJobQuantity(planJobQuantity, factJobQuantity)
+  if (planJobQuantity.length - factJobQuantity.length > 2) predictJobQuantity = getPredictJobQuantity(planJobQuantity, factJobQuantity)
 
-  updateJobPlanFactChart(
-    arrayOfDates,
-    planJobQuantity,
-    factJobQuantity,
-    predictJobQuantity
-  )
-
-  updateEmployeesPlanFactChart(
-    arrayOfDates,
-    planEmployeesQuantity,
-    factEmployeesQuantity
-  )
+  updateJobPlanFactChart(arrayOfDates, planJobQuantity, factJobQuantity, predictJobQuantity)
+  updateEmployeesPlanFactChart(arrayOfDates, planEmployeesQuantity, factEmployeesQuantity)
 
   return factJobQuantity[factJobQuantity.length - 1]
 }
@@ -954,9 +802,7 @@ function getPredictJobQuantity(planJobQuantity, factJobQuantity) {
   if (firstWorkDayIndex > 0) firstWorkDayIndex--
   const lastWorkDayIndex = factJobQuantity.length - 1
   if (lastWorkDayIndex - firstWorkDayIndex < 4) return null
-  const dailyEfficiency = parseFloat(
-    maxFactValue / (lastWorkDayIndex - firstWorkDayIndex)
-  )
+  const dailyEfficiency = parseFloat(maxFactValue / (lastWorkDayIndex - firstWorkDayIndex))
   const predictArr = new Array(planJobQuantity.length).fill(NaN)
   for (let i = lastWorkDayIndex; i < predictArr.length; i++) {
     if (Math.round(maxFactValue) === Math.round(maxPlanValue)) break
@@ -1026,23 +872,14 @@ function createEmployeesPlanFactChart(ctx) {
   })
 }
 
-function updateEmployeesPlanFactChart(
-  labels = [new Date()],
-  planData = [],
-  factData = []
-) {
+function updateEmployeesPlanFactChart(labels = [new Date()], planData = [], factData = []) {
   chartEmployeesPlanFact.data.labels = labels.map((v) => getDatePolishFormat(v))
   chartEmployeesPlanFact.data.datasets[0].data = planData
   chartEmployeesPlanFact.data.datasets[1].data = factData
   chartEmployeesPlanFact.update()
 }
 
-function updateJobPlanFactChart(
-  labels = [new Date()],
-  dataPlan = [],
-  dataFact = [],
-  dataPredict = null
-) {
+function updateJobPlanFactChart(labels = [new Date()], dataPlan = [], dataFact = [], dataPredict = null) {
   getArrayGrowthDataForChart(dataPlan)
   getArrayGrowthDataForChart(dataFact)
   chartJobPlanFact.data.labels = labels.map((v) => getDatePolishFormat(v))
@@ -1086,23 +923,15 @@ function updateJobPlanFactChart(
 function getInitialPlanningBlockHtml() {
   const projectsInfo = JSON.parse(localStorage.getItem('projects'))
   if (projectsInfo === null) return setInitialPlanningInnerHtml()
-  projectsInfo.sort(
-    (a, b) => new Date(b.dateFrom).getTime() - new Date(a.dateFrom).getTime()
-  )
+  projectsInfo.sort((a, b) => new Date(b.dateFrom).getTime() - new Date(a.dateFrom).getTime())
   let html = ''
   for (const prjct of projectsInfo) {
     html += `<div class="border border-blue-400 rounded-xl">
       <div class="flex flex-row items-center w-full p-4 rounded-md focus:outline-none">
         <div class="w-3/12 text-left">${prjct.project}</div>
         <div class="w-3/12 text-left">${prjct.contractor}</div>
-        <div class="w-2/12 flex justify-end">${getDatePolishFormat(
-          prjct.dateFrom,
-          true
-        )}</div>
-        <div class="w-2/12 flex justify-end">${getDatePolishFormat(
-          prjct.dateTo,
-          true
-        )}</div>
+        <div class="w-2/12 flex justify-end">${getDatePolishFormat(prjct.dateFrom, true)}</div>
+        <div class="w-2/12 flex justify-end">${getDatePolishFormat(prjct.dateTo, true)}</div>
         <div class="w-2/12 flex justify-end">
           <button
             class="flex flex-row gap-3 items-center bg-transparent text-gray-900 py-2 px-4 rounded-md border border-blue-400 duration-500 hover:bg-slate-300"
@@ -1130,9 +959,7 @@ function getInitialPlanningBlockHtml() {
 
 function showDetailPlanningForm(e) {
   const project = e.getAttribute('data-project')
-  const jobs = JSON.parse(localStorage.getItem('planJobsGeneral'))?.filter(
-    (v) => v.project === project
-  )
+  const jobs = JSON.parse(localStorage.getItem('planJobsGeneral'))?.filter((v) => v.project === project)
   const jobTypes = JSON.parse(localStorage.getItem('jobs'))
   if (jobTypes === null) return setInitialPlanningInnerHtml()
 
@@ -1146,18 +973,10 @@ function getInitialPlanningInputsRowHtml(jobTypes, jobs) {
     const elem = getArrayElementByField(jobs, 'job', v.job)
     return `<div class="flex flex-row justify-start items-center py-1 px-1">
       <input type="hidden" name="id" value="${elem?.id || ''}" />
-      <input type="text" name="job" class="bg-transparent w-4/12 mx-1 italic" value="${
-        v.job
-      }" readonly disabled />
-      <input type="text" name="department" value="${
-        v.department
-      }" class="bg-transparent w-2/12 mx-1 italic" readonly disabled />
-      <input type="text" name="quantity" autocomplete="off" onfocusout="validatePercentage(this)" value="${
-        elem?.quantity || ''
-      }" class="bg-slate-100 border border-blue-200 rounded-md w-1/12 mx-1 p-1 text-right" oninput="intInputPattern(this)" maxlength="6" />
-      <input type="text" name="unit" value="${
-        v.unit
-      }" class="bg-transparent w-1/12 mx-1 italic" readonly disabled />
+      <input type="text" name="job" class="bg-transparent w-4/12 mx-1 italic" value="${v.job}" readonly disabled />
+      <input type="text" name="department" value="${v.department}" class="bg-transparent w-2/12 mx-1 italic" readonly disabled />
+      <input type="text" name="quantity" autocomplete="off" onfocusout="validatePercentage(this)" value="${elem?.quantity || ''}" class="bg-slate-100 border border-blue-200 rounded-md w-1/12 mx-1 p-1 text-right" oninput="intInputPattern(this)" maxlength="6" />
+      <input type="text" name="unit" value="${v.unit}" class="bg-transparent w-1/12 mx-1 italic" readonly disabled />
       <input type="date" name="dateFrom" class="bg-slate-100 border border-blue-200 rounded-md w-2/12 text-center mx-1 py-1"
       value="${elem?.dateFrom || ''}"/>
       <input type="date" name="dateTo" class="bg-slate-100 border border-blue-200 rounded-md w-2/12 text-center mx-1 py-1"
@@ -1183,9 +1002,7 @@ function getInitialPlanningInputsRowHtml(jobTypes, jobs) {
       </button>
     </div>`
   )
-  return `<form id="initialPlanningDetailForm" onsubmit="event.preventDefault(); submitInitialPlanningForm(this)" class="border border-dashed border-blue-300 rounded-lg p-2">${html.join(
-    ''
-  )}</form>`
+  return `<form id="initialPlanningDetailForm" onsubmit="event.preventDefault(); submitInitialPlanningForm(this)" class="border border-dashed border-blue-300 rounded-lg p-2">${html.join('')}</form>`
 }
 
 function getInitialPlanningFormHeaderHtml(project) {
@@ -1230,9 +1047,7 @@ function getArrayElementByField(arr, field, value) {
   return needed.length === 0 ? null : needed[0]
 }
 
-function setInitialPlanningInnerHtml(
-  html = '<p class="p-3">Problem z pobieraniem danych...</p>'
-) {
+function setInitialPlanningInnerHtml(html = '<p class="p-3">Problem z pobieraniem danych...</p>') {
   _('initialPlanningGeneral').innerHTML = html
 }
 
@@ -1251,9 +1066,7 @@ function hideDetailPlanningForm() {
 }
 
 function submitInitialPlanningForm(e) {
-  const projectName = _('initialPlanningDetail').getElementsByClassName(
-    'w-3/12'
-  )[0]?.textContent
+  const projectName = _('initialPlanningDetail').getElementsByClassName('w-3/12')[0]?.textContent
   if (!projectName) return alert('Some issues with getting project info')
   let isFormDataValid = true
   const initialPlanningDetailArray = []
@@ -1269,16 +1082,11 @@ function submitInitialPlanningForm(e) {
     if (!validateRowData.isValid) isFormDataValid = false
     if (!validateRowData.isEmpty) initialPlanningDetailArray.push(jobs)
   })
-  if (!isFormDataValid)
-    return showCustomModal('Uwaga', 'Nie poprawnie wypełniony formularz')
-  if (initialPlanningDetailArray.length === 0)
-    return showCustomModal('Uwaga', 'Formularz jest pusty')
-  const grupped = Object.groupBy(initialPlanningDetailArray, ({ id }) =>
-    id == '' ? 'new' : 'exists'
-  )
+  if (!isFormDataValid) return showCustomModal('Uwaga', 'Nie poprawnie wypełniony formularz')
+  if (initialPlanningDetailArray.length === 0) return showCustomModal('Uwaga', 'Formularz jest pusty')
+  const grupped = Object.groupBy(initialPlanningDetailArray, ({ id }) => (id == '' ? 'new' : 'exists'))
   const isFormDataChanged = getIsFormDataChanged(grupped.exists)
-  if (!grupped.new && !isFormDataChanged)
-    return showCustomModal('Uwaga', 'Nie było żadnych zmian')
+  if (!grupped.new && !isFormDataChanged) return showCustomModal('Uwaga', 'Nie było żadnych zmian')
 
   console.log(grupped)
 
@@ -1296,13 +1104,7 @@ function getIsFormDataChanged(exists) {
   if (!stored) return true
   for (const e of exists) {
     for (const s of stored) {
-      if (
-        e.id == s.id &&
-        (e.quantity != s.quantity ||
-          e.dateFrom != s.dateFrom ||
-          e.dateTo != s.dateTo)
-      )
-        return true
+      if (e.id == s.id && (e.quantity != s.quantity || e.dateFrom != s.dateFrom || e.dateTo != s.dateTo)) return true
     }
   }
   return false
@@ -1313,26 +1115,12 @@ function validateFormRowData(obj) {
     isValid: false,
     isEmpty: true,
   }
-  if (
-    obj.dateFrom === '' &&
-    obj.dateTo === '' &&
-    (obj.quantity === '' || obj.quantity == 0)
-  )
-    res.isValid = true
-  if (
-    obj.dateFrom !== '' &&
-    obj.dateTo !== '' &&
-    obj.quantity !== '' &&
-    obj.quantity != 0
-  ) {
+  if (obj.dateFrom === '' && obj.dateTo === '' && (obj.quantity === '' || obj.quantity == 0)) res.isValid = true
+  if (obj.dateFrom !== '' && obj.dateTo !== '' && obj.quantity !== '' && obj.quantity != 0) {
     res.isEmpty = false
     res.isValid = true
   }
-  if (
-    !res.isEmpty &&
-    new Date(obj.dateFrom).getTime() > new Date(obj.dateTo).getTime()
-  )
-    res.isValid = false
+  if (!res.isEmpty && new Date(obj.dateFrom).getTime() > new Date(obj.dateTo).getTime()) res.isValid = false
   return res
 }
 
