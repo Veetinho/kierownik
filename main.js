@@ -12,22 +12,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   setActiveSection()
   getInitialPlanningBlockHtml()
   setPlanDatesRange()
-  // const {
-  //   jobs,
-  //   foremen,
-  //   projects,
-  //   factJobsDetail,
-  //   planJobsDetail,
-  //   planJobsGeneral,
-  // } = await fetchData()
-  // setToLocalStorage(
-  //   ['jobs', jobs],
-  //   ['foremen', foremen],
-  //   ['projects', projects],
-  //   ['factJobsDetail', factJobsDetail],
-  //   ['planJobsDetail', planJobsDetail],
-  //   ['planJobsGeneral', planJobsGeneral]
-  // )
+  // const { jobs, foremen, projects, factJobsDetail, planJobsDetail, planJobsGeneral } = await fetchData()
+  // setToLocalStorage(['jobs', jobs], ['foremen', foremen], ['projects', projects], ['factJobsDetail', factJobsDetail], ['planJobsDetail', planJobsDetail], ['planJobsGeneral', planJobsGeneral])
   setProjectDropdownOptions(JSON.parse(localStorage.getItem('projects')))
 })
 
